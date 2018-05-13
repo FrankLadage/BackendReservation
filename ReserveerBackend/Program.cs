@@ -14,6 +14,15 @@ namespace ReserveerBackend
     {
         public static void Main(string[] args)
         {
+            string shutdownkey;
+            byte[] key = new byte[200];
+            var RNG = new Random();
+            RNG.NextBytes(key);
+            shutdownkey = System.Convert.ToBase64String(key);
+            Controllers.ShutdownController.secretkey = shutdownkey;
+            StreamWriter i = new StreamWriter("ShutdownKey.txt");
+            i.Write(shutdownkey);
+            i.Close();
             BuildWebHost(args).Run();
         }
 
