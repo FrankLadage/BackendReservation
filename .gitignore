@@ -5,6 +5,7 @@
 /tmp
 /obj/*
 /ReserveerBackend/obj/*
+/ReserveerBackend/bin/*
 
 # dependencies
 /node_modules
