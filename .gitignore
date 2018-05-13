@@ -3,6 +3,8 @@
 # compiled output
 /dist
 /tmp
+/obj/*
+/ReserveerBackend/obj/*
 
 # dependencies
 /node_modules
