@@ -65,7 +65,7 @@ namespace ReserveerBackend.Controllers
             return Content("Succesfully added report");
         }
         [HttpPost]
-        [Route("Create")]
+        [Route("CreateAboutReservation")]
         public IActionResult createreportaboutreservation(int RoomID, string Description, int reservationid, DateTime? RequestedEndTime)
         {
             var Owner = Models.User.FromClaims(User.Claims);
