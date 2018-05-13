@@ -6,6 +6,7 @@
 /obj/*
 /ReserveerBackend/obj/*
 /ReserveerBackend/bin/*
+/.vs/*
 
 # dependencies
 /node_modules
