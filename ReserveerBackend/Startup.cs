@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -42,6 +43,10 @@ namespace ReserveerBackend
                     connectionString = Configuration.GetConnectionString("Production");
                     break;
                 default: throw new NotImplementedException();
+            }
+            if(connectionString == null)
+            {
+                throw new Exception("Connection string is null");
             }
             services.AddDbContext<ReserveerDBContext>(options =>
                 options.UseNpgsql(connectionString
