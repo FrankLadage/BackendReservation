@@ -39,6 +39,7 @@ namespace ReserveerBackend
                     throw new Exception("Given environment is not valid! Please enter either 'Development', 'Testing' or 'Production'");
             }
             port = args[1];
+            Console.WriteLine("Port: " + port);
             const int amountofargs = 2;
             var temp = new string[args.Length - amountofargs];
             Array.Copy(args, amountofargs, temp, 0, args.Length - amountofargs);
