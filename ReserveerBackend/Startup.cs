@@ -35,6 +35,9 @@ namespace ReserveerBackend
             {
                 case Program.EnvironmentType.Development:
                     connectionString = Configuration.GetConnectionString("Development");
+                    Console.Write("Got connection string");
+                    Console.Write(connectionString);
+                    Console.Write("Printed string above");
                     break;
                 case Program.EnvironmentType.Testing:
                     connectionString = Configuration.GetConnectionString("Testing");
@@ -44,7 +47,6 @@ namespace ReserveerBackend
                     break;
                 default: throw new NotImplementedException();
             }
-            Console.Write("ConnectionString: " + connectionString);
             services.AddDbContext<ReserveerDBContext>(options =>
                 options.UseNpgsql(connectionString
                     , b => b.MigrationsAssembly("ReserveerBackend")));
