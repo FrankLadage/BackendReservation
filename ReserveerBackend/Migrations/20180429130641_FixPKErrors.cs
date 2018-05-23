@@ -136,7 +136,7 @@ namespace ReserveerBackend.Migrations
                 name: "ParticipantChanges",
                 columns: table => new
                 {
-                    shadowidgen1
+                    shadowid
                     = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ChangeDate = table.Column<DateTime>(nullable: false),
@@ -146,7 +146,7 @@ namespace ReserveerBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ParticipantChanges", x => x.shadowidgen1);
+                    table.PrimaryKey("PK_ParticipantChanges", x => x.shadowid);
                     table.ForeignKey(
                         name: "FK_ParticipantChanges_Reservations_ReservationId",
                         column: x => x.ReservationId,
