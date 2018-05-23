@@ -35,9 +35,6 @@ namespace ReserveerBackend
             {
                 case Program.EnvironmentType.Development:
                     connectionString = Configuration.GetConnectionString("Development");
-                    Console.Write("Got connection string");
-                    Console.Write(connectionString);
-                    Console.Write("Printed string above");
                     break;
                 case Program.EnvironmentType.Testing:
                     connectionString = Configuration.GetConnectionString("Testing");
