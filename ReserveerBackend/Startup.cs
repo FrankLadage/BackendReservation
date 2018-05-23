@@ -44,7 +44,7 @@ namespace ReserveerBackend
                     break;
                 default: throw new NotImplementedException();
             }
-            Console.Write(connectionString);
+            Console.Write("ConnectionString: " + connectionString);
             services.AddDbContext<ReserveerDBContext>(options =>
                 options.UseNpgsql(connectionString
                     , b => b.MigrationsAssembly("ReserveerBackend")));
