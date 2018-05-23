@@ -44,10 +44,7 @@ namespace ReserveerBackend
                     break;
                 default: throw new NotImplementedException();
             }
-            if(connectionString == null)
-            {
-                throw new Exception("Connection string is null");
-            }
+            Console.Write(connectionString);
             services.AddDbContext<ReserveerDBContext>(options =>
                 options.UseNpgsql(connectionString
                     , b => b.MigrationsAssembly("ReserveerBackend")));
