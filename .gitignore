@@ -19,3 +19,11 @@
 /libpeerconnection.log
 npm-debug.log*
 testem.log
+
+ReserveerBackend/ShutdownKey\.txt
+
+API_Test/API_Test/API_Test/obj/
+
+API_Test/API_Test/API_Test/bin/
+
+API_Test/API_Test/\.vs/

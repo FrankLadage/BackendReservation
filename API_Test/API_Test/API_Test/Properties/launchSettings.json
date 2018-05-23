@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "API_Test": {
+      "commandName": "Project",
+      "commandLineArgs": "localhost"
+    }
+  }
+}
