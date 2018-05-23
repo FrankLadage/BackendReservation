@@ -19,10 +19,11 @@ namespace ReserveerBackend
             Development
         }
         public static EnvironmentType Environment { private set; get; }
+        private static string port;
         public static void Main(string[] args)
         {
-            if (args.Length < 1)
-                throw new Exception("No command line argument for running environment given!");
+            if (args.Length < 2)
+                throw new Exception("No command line argument for running environment or port was given!");
             switch (args[0])
             {
                 case "Development":
@@ -37,8 +38,10 @@ namespace ReserveerBackend
                 default:
                     throw new Exception("Given environment is not valid! Please enter either 'Development', 'Testing' or 'Production'");
             }
-            var temp = new string[args.Length - 1];
-            Array.Copy(args, 1, temp, 0, args.Length - 1);
+            port = args[1];
+            const int amountofargs = 2;
+            var temp = new string[args.Length - amountofargs];
+            Array.Copy(args, amountofargs, temp, 0, args.Length - amountofargs);
             args = temp;
 
             string shutdownkey;
@@ -56,7 +59,7 @@ namespace ReserveerBackend
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://0.0.0.0:5000")
+                .UseUrls(string.Format("http://0.0.0.0:{0}", port))
                 .Build();
     }
 }

@@ -18,7 +18,7 @@
     },
     "ReserveerBackend": {
       "commandName": "Project",
-      "commandLineArgs": "Production",
+      "commandLineArgs": "Production 5000",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
