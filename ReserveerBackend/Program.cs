@@ -12,8 +12,35 @@ namespace ReserveerBackend
 {
     public class Program
     {
+        public enum EnvironmentType
+        {
+            Production,
+            Testing,
+            Development
+        }
+        public static EnvironmentType Environment { private set; get; }
         public static void Main(string[] args)
         {
+            if (args.Length < 1)
+                throw new Exception("No command line argument for running environment given!");
+            switch (args[0])
+            {
+                case "Development":
+                    Environment = EnvironmentType.Development;
+                    break;
+                case "Testing":
+                    Environment = EnvironmentType.Testing;
+                    break;
+                case "Production":
+                    Environment = EnvironmentType.Production;
+                    break;
+                default:
+                    throw new Exception("Given environment is not valid! Please enter either 'Development', 'Testing' or 'Production'");
+            }
+            var temp = new string[args.Length - 1];
+            Array.Copy(args, 1, temp, 0, args.Length - 1);
+            args = temp;
+
             string shutdownkey;
             byte[] key = new byte[200];
             var RNG = new Random();

@@ -29,7 +29,20 @@ namespace ReserveerBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("ReserveerDBContext");
+            string connectionString;
+            switch (Program.Environment)
+            {
+                case Program.EnvironmentType.Development:
+                    connectionString = Configuration.GetConnectionString("Development");
+                    break;
+                case Program.EnvironmentType.Testing:
+                    connectionString = Configuration.GetConnectionString("Testing");
+                    break;
+                case Program.EnvironmentType.Production:
+                    connectionString = Configuration.GetConnectionString("Production");
+                    break;
+                default: throw new NotImplementedException();
+            }
             services.AddDbContext<ReserveerDBContext>(options =>
                 options.UseNpgsql(connectionString
                     , b => b.MigrationsAssembly("ReserveerBackend")));

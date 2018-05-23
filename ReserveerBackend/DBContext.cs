@@ -9,10 +9,24 @@ namespace ReserveerBackend
 {
     public class ReserveerDBContext : DbContext
     {
-        //private DbContextOptionsBuilder _optionsBuilder;
         public ReserveerDBContext(DbContextOptions<ReserveerDBContext> options) : base(options)
         {
-
+            if (Program.Environment == Program.EnvironmentType.Testing) //if testing, delete testing database on startup for clean slate
+            {
+                Database.EnsureDeleted();
+            }
+            Database.Migrate();
+            if(!(UserPasswordLogins.Where(x => x.Username == "Admin").Count() > 0)){ //check is a user Admin exists, if not, create it
+                var user = new User();
+                user.Email = "";
+                user.EmailNotification = false;
+                user.Role = Role.Admin;
+                user.PasswordLogin = PasswordLoginUtilities.GenerateNewLogin("Admin", "Password");
+                user.PasswordLogin.User = user;
+                Users.Add(user);
+                UserPasswordLogins.Add(user.PasswordLogin);
+                SaveChanges();
+            }
         }
         public DbSet<Participant> Participants { get; set; }
         public DbSet<ParticipantChange> ParticipantChanges { get; set; }
@@ -36,27 +50,6 @@ namespace ReserveerBackend
             modelBuilder.Entity<ParticipantChange>().HasKey(x => new { x.UserID, x.ReservationID, x.ChangeDate });
             modelBuilder.Entity<ParticipantChange>().HasOne(x => x.User).WithMany(x => x.ParticipantChanges).HasForeignKey(x => x.UserID);
             modelBuilder.Entity<ParticipantChange>().HasOne(x => x.Reservation).WithMany(x => x.ParticipantChanges).HasForeignKey(x => x.ReservationID);
-
-            //modelBuilder.Entity<Participant>(
-            //    x =>
-            //    {
-            //        x.HasKey(z => new { z.Reservation, z.User });
-            //        x.HasOne<User>(z => z.User).WithMany();
-            //        x.HasOne<Reservation>(z => z.Reservation).WithMany().HasForeignKey(z => new { z.Reservation, z.User });
-            //    }
-            //    );
-            //modelBuilder.Entity<Participant>(
-            //    x =>
-            //    {
-            //        x.HasOne<User>().WithMany();
-            //        x.HasOne<Reservation>().WithMany();
-            //        x.HasKey(t => new { t.Reservation, t.User });
-            //    }
-            //    );
-            //modelBuilder.Entity<Participant>().HasOne(x => x.User).WithMany(x => x.Participants).HasForeignKey(x => new { u1 = x.User.Id, u2 = x.Reservation.Id });
-            //modelBuilder.Entity<Participant>().hafo(x => new { u1 = x.Reservation.Id, u2 = x.User.Id });
-            //modelBuilder.Entity<Participant>().HasOne(nameof(Reservation)).WithMany(nameof(Participant));
-            //modelBuilder.Entity<Participant>().HasOne(nameof(User)).WithMany(nameof(Participant));
         }
     }
 }
