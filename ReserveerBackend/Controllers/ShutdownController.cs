@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,14 @@ namespace ReserveerBackend.Controllers
         {
             if (secretkey == key)
                 Environment.Exit(0);
+        }
+
+        [HttpPost]
+        [Route("AdminShutdown")]
+        [Authorize(Roles = Authorization.AdminOrHigher)]
+        public void Shutdown()
+        {
+            Environment.Exit(0);
         }
 
         public static string secretkey { get; set; }
