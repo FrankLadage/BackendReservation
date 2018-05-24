@@ -51,18 +51,16 @@ namespace ReserveerBackend.Controllers
             var room = _context.Rooms.Find(RoomID);
             if(room == null)
             {
-                Response.StatusCode = 400;
-                return Content("Room not found");
+                return BadRequest("Room not found");
             }
             if (String.IsNullOrWhiteSpace(Description))
             {
-                Response.StatusCode = 400;
-                return Content("Description cannot be empty");
+                return BadRequest("Description cannot be empty");
             }
 
             _context.Reports.Add(new Models.Report(room, Owner, Description));
             _context.SaveChanges();
-            return Content("Succesfully added report");
+            return Ok("Succesfully added report");
         }
         [HttpPost]
         [Route("CreateAboutReservation")]
@@ -73,25 +71,22 @@ namespace ReserveerBackend.Controllers
             var reservation = _context.Reservations.Find(reservationid);
             if (room == null)
             {
-                Response.StatusCode = 400;
-                return Content("Room not found");
+                return BadRequest("Room not found");
             }
             if (reservation == null)
             {
-                Response.StatusCode = 400;
-                return Content("Reservation not found");
+                return BadRequest("Reservation not found");
             }
             if (String.IsNullOrWhiteSpace(Description))
             {
-                Response.StatusCode = 400;
-                return Content("Description cannot be empty");
+                return BadRequest("Description cannot be empty");
             }
             if (RequestedEndTime.HasValue)
                 _context.Reports.Add(new Models.Report(room, Owner, Description, reservation, RequestedEndTime.Value));
             else
                 _context.Reports.Add(new Models.Report(room, Owner, Description, reservation));
             _context.SaveChanges();
-            return Content("Succesfully added report");
+            return Ok("Succesfully added report");
         }
     }
 }

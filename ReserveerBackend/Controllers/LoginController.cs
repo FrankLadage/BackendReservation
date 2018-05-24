@@ -27,20 +27,17 @@ namespace ReserveerBackend.Controllers
         {
             if (string.IsNullOrEmpty(name))
             {
-                Response.StatusCode = 400;
-                return Content("Username cannot be empty");
+                return BadRequest("Username cannot be empty");
             }
             if (string.IsNullOrEmpty(name))
             {
-                Response.StatusCode = 400;
-                return Content("Password cannot be empty");
+                return BadRequest("Password cannot be empty");
             }
             //_context.Database.
             var userlogin = _context.UserPasswordLogins.Where(x => x.Username == name).Include(x => x.User);
             if (userlogin.Count() != 1)
             {
-                Response.StatusCode = 400;
-                return Content("User does not exist");
+                return BadRequest("User does not exist");
             }
 
 
@@ -49,8 +46,7 @@ namespace ReserveerBackend.Controllers
 
             if(!PasswordLoginUtilities.CheckLogin(password, first))
             {
-                Response.StatusCode = 400;
-                return Content("Password was incorrect");
+                return BadRequest("Password was incorrect");
             }
 
             var userdata = first.User;
@@ -60,7 +56,7 @@ namespace ReserveerBackend.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 principal);
-            return Content(
+            return Ok(
 String.Format(@"Logged in!
 Username: {0}
 Password: {1}

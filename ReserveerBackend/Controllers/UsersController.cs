@@ -37,8 +37,7 @@ namespace ReserveerBackend.Controllers
             Role _role = Role.Student;
             if (!castrole.HasValue)
             {
-                Response.StatusCode = 400;
-                return Content("Role is invalid");
+                return BadRequest("Role is invalid");
             }
             else
                 _role = castrole.Value;
@@ -58,7 +57,7 @@ namespace ReserveerBackend.Controllers
             _context.Users.Add(newuser);
             _context.UserPasswordLogins.Add(newuser.PasswordLogin);
             _context.SaveChanges();
-            return Content(string.Format("Succesfully registered user with username: {0}", Username));
+            return Ok(string.Format("Succesfully registered user with username: {0}", Username));
         }
 
         [HttpPost]

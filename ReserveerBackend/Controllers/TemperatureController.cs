@@ -24,18 +24,16 @@ namespace ReserveerBackend.Controllers
             var sensor = _context.TemperatureSensors.Find(sensorID);
             if(sensor == null)
             {
-                Response.StatusCode = 400;
-                return Content("Sensor ID is not valid");
+                return BadRequest("Sensor ID is not valid");
             }
             var room = _context.Rooms.Find(roomid);
             if(room == null)
             {
-                Response.StatusCode = 400;
-                return Content("RoomID is not a valid room");
+                return BadRequest("RoomID is not a valid room");
             }
             _context.Temperatures.Add(new Models.Temperature(sensor, value, room, DateTime.Now));
             _context.SaveChanges();
-            return Content("Succesfully added temperature");
+            return Ok("Succesfully added temperature");
         }
         [HttpGet]
         public IEnumerable<Temperature> AllTemperatures()

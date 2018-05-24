@@ -19,7 +19,7 @@ namespace ReserveerBackend.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Content("Logged out!");
+            return Ok("Logged out!");
         }
 
     }

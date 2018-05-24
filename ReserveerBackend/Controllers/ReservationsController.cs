@@ -57,33 +57,29 @@ namespace ReserveerBackend.Controllers
             var _reservation = _context.Reservations.Where(x => x.Id == reservationid).Include(x=>x.Participants).Include(x=>x.ParticipantChanges);
             if(_reservation.Count() != 1)
             {
-                Response.StatusCode = 400;
-                return Content("Could not find reservation");
+                return BadRequest("Could not find reservation");
             }
             var reservation = _reservation.First();
             if(reservation.Participants.Where(x=> x.UserID == owner.Id).Where(x => x.IsOwner).Count() != 1 || Authorization.AIsBOrHigher(owner.Role, Role.ServiceDesk))
             {
-                Response.StatusCode = 401;
-                return Content("You are not the owner of this reservation, nor are you a service desk member or higher");
+                return Unauthorized();
             }
 
             if (UserIds == null)
             {
-                Response.StatusCode = 400;
-                return Content("UserId's cannot be empty");
+                return BadRequest("UserId's cannot be empty");
             }
             var users = from id in UserIds select new Tuple<User, bool>(_context.Users.Find(id.Item1), id.Item2);
             if(!users.All(x => x.Item1 != null))
             {
-                Response.StatusCode = 400;
-                return Content("A user could not be found");
+                return BadRequest("A user could not be found");
             }
 
             foreach (var user in users)
             {
                 InviteUser(owner, user.Item1, user.Item2, reservation);
             }
-            return Content("Succesfull added or updated users");
+            return Ok("Succesfull added or updated users");
         }
 
         [HttpDelete]
@@ -94,26 +90,22 @@ namespace ReserveerBackend.Controllers
             var _reservation = _context.Reservations.Where(x => x.Id == reservationid).Include(x => x.Participants).Include(x => x.ParticipantChanges);
             if (_reservation.Count() != 1)
             {
-                Response.StatusCode = 400;
-                return Content("Could not find reservation");
+                return BadRequest("Could not find reservation");
             }
             var reservation = _reservation.First();
             if (reservation.Participants.Where(x => x.UserID == owner.Id).Where(x => x.IsOwner).Count() != 1 || Authorization.AIsBOrHigher(owner.Role, Role.ServiceDesk))
             {
-                Response.StatusCode = 401;
-                return Content("You are not the owner of this reservation, nor are you a service desk member or higher");
+                return Unauthorized();
             }
 
             if (UserIds == null)
             {
-                Response.StatusCode = 400;
-                return Content("UserId's cannot be empty");
+                return BadRequest("UserId's cannot be empty");
             }
             var users = from id in UserIds select _context.Users.Find(id);
             if (!users.All(x => x != null))
             {
-                Response.StatusCode = 400;
-                return Content("A user could not be found");
+                return BadRequest("A user could not be found");
             }
 
             foreach (var user in users)
@@ -178,8 +170,7 @@ namespace ReserveerBackend.Controllers
                 room = _context.Rooms.Find(RoomID.Value);
                 if (room == null)
                 {
-                    Response.StatusCode = 400;
-                    return Content("RoomID could not be found");
+                    return BadRequest("RoomID could not be found");
                 }
             }
             lock (ReservationLock)
@@ -188,8 +179,7 @@ namespace ReserveerBackend.Controllers
                 Reservation reservation = null;
                 if(_reservation.Count() != 0)
                 {
-                    Response.StatusCode = 400;
-                    return Content("Reservation could not be found");
+                    return BadRequest("Reservation could not be found");
                 }
                 reservation = _reservation.First();
 
@@ -197,8 +187,7 @@ namespace ReserveerBackend.Controllers
                 {
                     if(!Authorization.AIsBOrHigher(actor.Role, Role.ServiceDesk))
                     {
-                        Response.StatusCode = 401;
-                        return Content("You are not an owner of this reservation, nor are you a service desk employee or higher.");
+                        return Unauthorized();
                     }
                 }
 
@@ -217,8 +206,7 @@ namespace ReserveerBackend.Controllers
 
                 if(start > end)
                 {
-                    Response.StatusCode = 400;
-                    return Content("Startdate cannot come before end date");
+                    return BadRequest("Startdate cannot come before end date");
                 }
 
                 var intersections = FindIntersections(start, end);
@@ -231,8 +219,7 @@ namespace ReserveerBackend.Controllers
                     intersections = intersections.Where(x => x.Id != reservation.Id); //remove self
                     if (!Force)
                     {
-                        Response.StatusCode = 400;
-                        return Content("There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.");
+                        return BadRequest("There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.");
                     }
                     if (Authorization.AIsBOrHigher(actor.Role, Role.ServiceDesk)) //service desk or higher can always forcibly change reservations
                     {
@@ -242,8 +229,7 @@ namespace ReserveerBackend.Controllers
                     var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Find(x).Role);
                     if (!_intersectionownerLevels.All(x => Authorization.AIsHigherThanB(actor.Role, x))) //intersections with reservation from people of higher or equal level
                     {
-                        Response.StatusCode = 400;
-                        return Content("Overlaps with a reservation with owner of equal or higher level.");
+                        return BadRequest("Overlaps with a reservation with owner of equal or higher level.");
                     }
                     return _ForceChangeReservation(isactive, reservation, start, end, room, Description, reservationchange, actor, intersections); //intersections with reservations from people with lower level
                 }
@@ -256,19 +242,16 @@ namespace ReserveerBackend.Controllers
         {
             if (StartTime == null || EndTime == null || Description == null)
             {
-                Response.StatusCode = 400;
-                return Content("Fields missing");
+                return BadRequest("Fields missing");
             }
             if (StartTime > EndTime)
             {
-                Response.StatusCode = 400;
-                return Content("StartTime is before EndTime");
+                return BadRequest("StartTime is before EndTime");
             }
             var room = _context.Rooms.Find(RoomID);
             if (room == null)
             {
-                Response.StatusCode = 400;
-                return Content("Room does not exist");
+                return BadRequest("Room does not exist");
             }
             var Owner = Models.User.FromClaims(User.Claims);
 
@@ -277,30 +260,27 @@ namespace ReserveerBackend.Controllers
                 var intersections = FindIntersections(StartTime, EndTime);
                 if (intersections.Count() == 0) //No intersections with other reservations, add it
                 {
-                    return Content(createreservation(StartTime, EndTime, Description, Owner, room).ToString());
+                    return Ok(createreservation(StartTime, EndTime, Description, Owner, room).ToString());
                 }
                 if (!intersections.All(x => x.IsMutable == true)) //intersection with an immutable reservation
                 {
-                    Response.StatusCode = 400;
-                    return Content("Overlaps with an immutable reservation.");
+                    return BadRequest("Overlaps with an immutable reservation.");
                 }
                 if (!Force)
                 {
-                    Response.StatusCode = 400;
-                    return Content("There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.");
+                    return BadRequest("There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.");
                 }
                 if (Authorization.AIsBOrHigher(Owner.Role, Role.ServiceDesk)) //service desk or higher can always forcibly add reservations
                 {
-                    return Content(OverrideAddReservation(intersections, StartTime, EndTime, Description, Owner, room).ToString());
+                    return Ok(OverrideAddReservation(intersections, StartTime, EndTime, Description, Owner, room).ToString());
                 }
                 var _intersectionowners = (from x in intersections select x.Participants).SelectMany(x => x).Where(x => x.IsOwner).Select(x => x.UserID);
                 var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Find(x).Role);
                 if (!_intersectionownerLevels.All(x => Authorization.AIsHigherThanB(Owner.Role, x))) //intersections with reservation from people of higher or equal level
                 {
-                    Response.StatusCode = 400;
-                    return Content("Overlaps with a reservation with owner of equal or higher level.");
+                    return BadRequest("Overlaps with a reservation with owner of equal or higher level.");
                 }
-                return Content(OverrideAddReservation(intersections, StartTime, EndTime, Description, Owner, room).ToString()); //intersections with reservations from people with lower level
+                return Ok(OverrideAddReservation(intersections, StartTime, EndTime, Description, Owner, room).ToString()); //intersections with reservations from people with lower level
             }
         }
 
@@ -330,7 +310,7 @@ namespace ReserveerBackend.Controllers
             _context.Add(reservation);
             _context.ReservationChanges.Add(reservationchange);
             _context.SaveChanges();
-            return Content("Succesfully changed reservation");
+            return Ok("Succesfully changed reservation");
         }
 
         private int OverrideAddReservation(IEnumerable<Reservation> Intersections, DateTime StartTime, DateTime EndTime, string Description, User Owner, Room Room, bool IsMutable = true)
