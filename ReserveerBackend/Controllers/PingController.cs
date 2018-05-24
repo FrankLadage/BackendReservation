@@ -20,7 +20,7 @@ namespace ReserveerBackend.Controllers
         [HttpGet]
         public IActionResult Ping()
         {
-            //_context.Users.Count();
+            _context.Users.Count();
             return Ok("Pong");
         }
     }
