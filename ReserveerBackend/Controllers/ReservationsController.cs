@@ -69,7 +69,7 @@ namespace ReserveerBackend.Controllers
             {
                 return BadRequest("UserId's cannot be empty");
             }
-            var users = from id in UserIds select new Tuple<User, bool>(_context.Users.Find(id.Item1), id.Item2);
+            var users = from id in UserIds select new Tuple<User, bool>(_context.Users.Where(x => x.Id == id.Item1).FirstOrDefault(), id.Item2);
             if(!users.All(x => x.Item1 != null))
             {
                 return BadRequest("A user could not be found");
@@ -102,7 +102,7 @@ namespace ReserveerBackend.Controllers
             {
                 return BadRequest("UserId's cannot be empty");
             }
-            var users = from id in UserIds select _context.Users.Find(id);
+            var users = from id in UserIds select _context.Users.Where(x => x.Id == id).FirstOrDefault();
             if (!users.All(x => x != null))
             {
                 return BadRequest("A user could not be found");

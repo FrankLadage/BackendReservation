@@ -48,7 +48,7 @@ namespace ReserveerBackend.Controllers
         public IActionResult createreport(int RoomID, string Description)
         {
             var Owner = Models.User.FromClaims(User.Claims);
-            var room = _context.Rooms.Find(RoomID);
+            var room = _context.Rooms.Where(x => x.Id == RoomID).FirstOrDefault();
             if(room == null)
             {
                 return BadRequest("Room not found");
@@ -67,8 +67,8 @@ namespace ReserveerBackend.Controllers
         public IActionResult createreportaboutreservation(int RoomID, string Description, int reservationid, DateTime? RequestedEndTime)
         {
             var Owner = Models.User.FromClaims(User.Claims);
-            var room = _context.Rooms.Find(RoomID);
-            var reservation = _context.Reservations.Find(reservationid);
+            var room = _context.Rooms.Where(x=> x.Id == RoomID).FirstOrDefault();
+            var reservation = _context.Reservations.Where(x => x.Id == reservationid).FirstOrDefault();
             if (room == null)
             {
                 return BadRequest("Room not found");

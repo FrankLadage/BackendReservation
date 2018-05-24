@@ -26,7 +26,7 @@ namespace ReserveerBackend.Controllers
             {
                 return BadRequest("Sensor ID is not valid");
             }
-            var room = _context.Rooms.Find(roomid);
+            var room = _context.Rooms.Where(x => x.Id == roomid).FirstOrDefault();
             if(room == null)
             {
                 return BadRequest("RoomID is not a valid room");
