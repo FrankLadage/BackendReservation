@@ -21,7 +21,6 @@ namespace ReserveerBackend.Controllers
         public IActionResult Ping()
         {
             _context.Users.Count();
-            return NotFound();
             return Ok("Pong");
         }
     }
