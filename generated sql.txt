@@ -1,0 +1,20 @@
+SQL generated for the rooms GetMatch function
+
+SELECT "x"."id",
+       "x"."capacity",
+       "x"."location",
+       "x"."name",
+       "x"."powersupply",
+       "x"."smartboard",
+       "x"."tv"
+FROM   "rooms" AS "x"
+WHERE  ( ( ( ( ( ( ( Strpos("x"."name", 'test') > 0 )
+                   AND ( Strpos("x"."location", 'here') > 0 ) )
+                 AND ( "x"."capacity" >= 9 ) )
+               AND ( "x"."capacity" <= 12 ) )
+             AND ( "x"."tv" = true ) )
+           AND ( "x"."smartboard" = false ) )
+         AND ( "x"."powersupply" >= 100 ) )
+       AND ( "x"."powersupply" <= 544 ) 
+
+There are nested AND statements, but because AND is commutative, it will be parsed as if the extra nests are not there.

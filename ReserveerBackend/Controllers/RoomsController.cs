@@ -40,6 +40,7 @@ namespace ReserveerBackend.Controllers
                 validrooms = validrooms.Where(x => x.Powersupply >= MinPowersupply.Value);
             if (MaxPowersupply.HasValue)
                 validrooms = validrooms.Where(x => x.Powersupply <= MaxPowersupply.Value);
+            //Console.WriteLine(validrooms.ToSql()); //see file "generated sql.txt" for the generated query
             return validrooms;
         }
 
