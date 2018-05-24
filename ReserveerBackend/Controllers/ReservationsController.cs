@@ -167,11 +167,12 @@ namespace ReserveerBackend.Controllers
             Room room = null;
             if (RoomID.HasValue)
             {
-                room = _context.Rooms.Find(RoomID.Value);
-                if (room == null)
+                var rooms = _context.Rooms.Where(x => x.Id == RoomID.Value);
+                if (!rooms.Any())
                 {
                     return BadRequest("RoomID could not be found");
                 }
+                room = rooms.First();
             }
             lock (ReservationLock)
             {
@@ -226,7 +227,7 @@ namespace ReserveerBackend.Controllers
                         return _ForceChangeReservation(isactive, reservation, start, end, room, Description, reservationchange, actor, intersections);
                     }
                     var _intersectionowners = (from x in intersections select x.Participants).SelectMany(x => x).Where(x => x.IsOwner).Select(x => x.UserID);
-                    var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Find(x).Role);
+                    var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Where(z => z.Id == x).First().Role);
                     if (!_intersectionownerLevels.All(x => Authorization.AIsHigherThanB(actor.Role, x))) //intersections with reservation from people of higher or equal level
                     {
                         return BadRequest("Overlaps with a reservation with owner of equal or higher level.");
@@ -248,11 +249,12 @@ namespace ReserveerBackend.Controllers
             {
                 return BadRequest("StartTime is before EndTime");
             }
-            var room = _context.Rooms.Find(RoomID);
-            if (room == null)
+            var rooms = _context.Rooms.Where(x => x.Id == RoomID);
+            if (!rooms.Any())
             {
                 return BadRequest("Room does not exist");
             }
+            var room = rooms.First();
             var Owner = Models.User.FromClaims(User.Claims);
 
             lock (ReservationLock) //lock all intersection checking and reservation writing logic to prevent changes to the database during the checking phase
@@ -275,7 +277,7 @@ namespace ReserveerBackend.Controllers
                     return Ok(OverrideAddReservation(intersections, StartTime, EndTime, Description, Owner, room).ToString());
                 }
                 var _intersectionowners = (from x in intersections select x.Participants).SelectMany(x => x).Where(x => x.IsOwner).Select(x => x.UserID);
-                var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Find(x).Role);
+                var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Where(z => z.Id == x).First().Role);
                 if (!_intersectionownerLevels.All(x => Authorization.AIsHigherThanB(Owner.Role, x))) //intersections with reservation from people of higher or equal level
                 {
                     return BadRequest("Overlaps with a reservation with owner of equal or higher level.");

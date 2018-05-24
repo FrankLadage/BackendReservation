@@ -21,7 +21,7 @@ namespace ReserveerBackend.Controllers
         [HttpPost]
         public IActionResult PostTemperature(float value, int sensorID, int roomid)
         {
-            var sensor = _context.TemperatureSensors.Find(sensorID);
+            var sensor = _context.TemperatureSensors.Where(x => x.Id == sensorID).FirstOrDefault();
             if(sensor == null)
             {
                 return BadRequest("Sensor ID is not valid");
