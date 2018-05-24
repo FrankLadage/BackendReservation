@@ -15,7 +15,8 @@ namespace ReserveerBackend
         public enum EnvironmentType
         {
             Production,
-            Testing,
+            DevelopmentTesting,
+            ProductionTesting,
             Development
         }
         public static EnvironmentType Environment { private set; get; }
@@ -29,14 +30,17 @@ namespace ReserveerBackend
                 case "Development":
                     Environment = EnvironmentType.Development;
                     break;
-                case "Testing":
-                    Environment = EnvironmentType.Testing;
+                case "DevelopmentTesting":
+                    Environment = EnvironmentType.DevelopmentTesting;
+                    break;
+                case "ProductionTesting":
+                    Environment = EnvironmentType.ProductionTesting;
                     break;
                 case "Production":
                     Environment = EnvironmentType.Production;
                     break;
                 default:
-                    throw new Exception("Given environment is not valid! Please enter either 'Development', 'Testing' or 'Production'");
+                    throw new Exception("Given environment is not valid! Please enter either 'Development', 'DevelopmentTesting', 'ProductionTesting' or 'Production'");
             }
             port = args[1];
             Console.WriteLine("Port: " + port);

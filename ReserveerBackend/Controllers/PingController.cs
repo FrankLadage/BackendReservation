@@ -11,9 +11,17 @@ namespace ReserveerBackend.Controllers
     [Route("api/Ping")]
     public class PingController : Controller
     {
+        ReserveerDBContext _context;
+        public PingController(ReserveerDBContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IActionResult Ping()
         {
+            _context.Users.Count();
+            return NotFound();
             return Ok("Pong");
         }
     }

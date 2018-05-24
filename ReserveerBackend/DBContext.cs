@@ -11,7 +11,7 @@ namespace ReserveerBackend
     {
         public ReserveerDBContext(DbContextOptions<ReserveerDBContext> options) : base(options)
         {
-            if (Program.Environment == Program.EnvironmentType.Testing) //if testing, delete testing database on startup for clean slate
+            if (Program.Environment == Program.EnvironmentType.ProductionTesting || Program.Environment == Program.EnvironmentType.DevelopmentTesting) //if testing, delete testing database on startup for clean slate
             {
                 Database.EnsureDeleted();
             }

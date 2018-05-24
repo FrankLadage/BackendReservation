@@ -36,8 +36,11 @@ namespace ReserveerBackend
                 case Program.EnvironmentType.Development:
                     connectionString = Configuration.GetConnectionString("Development");
                     break;
-                case Program.EnvironmentType.Testing:
-                    connectionString = Configuration.GetConnectionString("Testing");
+                case Program.EnvironmentType.ProductionTesting:
+                    connectionString = Configuration.GetConnectionString("ProductionTesting");
+                    break;
+                case Program.EnvironmentType.DevelopmentTesting:
+                    connectionString = Configuration.GetConnectionString("DevelopmentTesting");
                     break;
                 case Program.EnvironmentType.Production:
                     connectionString = Configuration.GetConnectionString("Production");
