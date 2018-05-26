@@ -45,6 +45,9 @@ namespace ReserveerBackend
                 case Program.EnvironmentType.Production:
                     connectionString = Configuration.GetConnectionString("Production");
                     break;
+                case Program.EnvironmentType.JenkinsTest:
+                    connectionString = Configuration.GetConnectionString("JenkinsTest");
+                    break;
                 default: throw new NotImplementedException();
             }
             services.AddDbContext<ReserveerDBContext>(options =>

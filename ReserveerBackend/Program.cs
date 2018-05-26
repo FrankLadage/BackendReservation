@@ -17,7 +17,8 @@ namespace ReserveerBackend
             Production,
             DevelopmentTesting,
             ProductionTesting,
-            Development
+            Development,
+            JenkinsTest
         }
         public static EnvironmentType Environment { private set; get; }
         private static string port;
@@ -38,6 +39,9 @@ namespace ReserveerBackend
                     break;
                 case "Production":
                     Environment = EnvironmentType.Production;
+                    break;
+                case "JenkinsTest":
+                    Environment = EnvironmentType.JenkinsTest;
                     break;
                 default:
                     throw new Exception("Given environment is not valid! Please enter either 'Development', 'DevelopmentTesting', 'ProductionTesting' or 'Production'");
