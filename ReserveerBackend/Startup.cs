@@ -82,6 +82,11 @@ namespace ReserveerBackend
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-2.0&tabs=aspnetcore2x
+            //for information about how to route
+            app.UseDefaultFiles();//shows index.html as default page
+            app.UseStaticFiles();//enable static files in general
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
