@@ -1,0 +1,14 @@
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\xunit.runner.reporters.netcoreapp10.dll
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\xunit.runner.utility.netcoreapp10.dll
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\XUnitTest.deps.json
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\XUnitTest.runtimeconfig.json
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\XUnitTest.runtimeconfig.dev.json
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\XUnitTest.dll
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\ReserveerBackend.dll
+F:\Projects\BackendReservation\XUnitTest\bin\Debug\netcoreapp2.0\ReserveerBackend.pdb
+F:\Projects\BackendReservation\XUnitTest\obj\Debug\netcoreapp2.0\XUnitTest.csprojResolveAssemblyReference.cache
+F:\Projects\BackendReservation\XUnitTest\obj\Debug\netcoreapp2.0\XUnitTest.csproj.CoreCompileInputs.cache
+F:\Projects\BackendReservation\XUnitTest\obj\Debug\netcoreapp2.0\XUnitTest.AssemblyInfoInputs.cache
+F:\Projects\BackendReservation\XUnitTest\obj\Debug\netcoreapp2.0\XUnitTest.AssemblyInfo.cs
+F:\Projects\BackendReservation\XUnitTest\obj\Debug\netcoreapp2.0\XUnitTest.csproj.CopyComplete
