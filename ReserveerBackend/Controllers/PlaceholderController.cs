@@ -13,7 +13,7 @@ namespace ReserveerBackend.Controllers
     {
         [HttpGet]
         [Route("unauthorized")]
-        public string Unauthorized()
+        public string Not_authorized()
         {
             Response.StatusCode = 401;
             return "You are not authorized to do that";

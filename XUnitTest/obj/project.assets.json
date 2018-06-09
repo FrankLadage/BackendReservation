@@ -5683,6 +5683,12 @@
           "lib/netstandard1.1/xunit.execution.dotnet.dll": {}
         }
       },
+      "xunit.runner.console/2.3.1": {
+        "type": "package",
+        "build": {
+          "build/xunit.runner.console.props": {}
+        }
+      },
       "xunit.runner.visualstudio/2.3.1": {
         "type": "package",
         "dependencies": {
@@ -14632,6 +14638,39 @@
         "xunit.extensibility.execution.nuspec"
       ]
     },
+    "xunit.runner.console/2.3.1": {
+      "sha512": "bvkd5z72ioJUsLzXuajcXlKtAp/2d7BqdfnluNZEMQbqTEu2xvxKRCNj+OrUKjsrDREwjsYqz6c8pd+/xhPWFg==",
+      "type": "package",
+      "path": "xunit.runner.console/2.3.1",
+      "files": [
+        "build/xunit.runner.console.props",
+        "tools/net452/xunit.abstractions.dll",
+        "tools/net452/xunit.console.exe",
+        "tools/net452/xunit.console.exe.config",
+        "tools/net452/xunit.console.x86.exe",
+        "tools/net452/xunit.console.x86.exe.config",
+        "tools/net452/xunit.runner.reporters.net452.dll",
+        "tools/net452/xunit.runner.utility.net452.dll",
+        "tools/netcoreapp1.0/xunit.abstractions.dll",
+        "tools/netcoreapp1.0/xunit.console.deps.json",
+        "tools/netcoreapp1.0/xunit.console.dll",
+        "tools/netcoreapp1.0/xunit.console.dll.config",
+        "tools/netcoreapp1.0/xunit.console.runtimeconfig.json",
+        "tools/netcoreapp1.0/xunit.runner.reporters.netcoreapp10.dll",
+        "tools/netcoreapp1.0/xunit.runner.utility.netcoreapp10.dll",
+        "tools/netcoreapp1.0/xunit.runner.utility.netcoreapp10.xml",
+        "tools/netcoreapp2.0/xunit.abstractions.dll",
+        "tools/netcoreapp2.0/xunit.console.deps.json",
+        "tools/netcoreapp2.0/xunit.console.dll",
+        "tools/netcoreapp2.0/xunit.console.dll.config",
+        "tools/netcoreapp2.0/xunit.console.runtimeconfig.json",
+        "tools/netcoreapp2.0/xunit.runner.reporters.netcoreapp10.dll",
+        "tools/netcoreapp2.0/xunit.runner.utility.netcoreapp10.dll",
+        "tools/netcoreapp2.0/xunit.runner.utility.netcoreapp10.xml",
+        "xunit.runner.console.2.3.1.nupkg.sha512",
+        "xunit.runner.console.nuspec"
+      ]
+    },
     "xunit.runner.visualstudio/2.3.1": {
       "sha512": "B+RtW4dyBquEyjSAFyV5RMifaOZOirDwlzcIq2DNVGo1gzJS8PAPu5S+2y1n6ZgEMWbpqJf9TkZ55+X6FLdy3A==",
       "type": "package",
@@ -14674,6 +14713,7 @@
       "Microsoft.NETCore.App >= 2.0.0",
       "ReserveerBackend >= 1.0.0",
       "xunit >= 2.3.1",
+      "xunit.runner.console >= 2.3.1",
       "xunit.runner.visualstudio >= 2.3.1"
     ]
   },
@@ -14747,6 +14787,10 @@
             "autoReferenced": true
           },
           "xunit": {
+            "target": "Package",
+            "version": "[2.3.1, )"
+          },
+          "xunit.runner.console": {
             "target": "Package",
             "version": "[2.3.1, )"
           },

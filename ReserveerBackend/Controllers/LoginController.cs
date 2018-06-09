@@ -29,12 +29,12 @@ namespace ReserveerBackend.Controllers
             {
                 return BadRequest("Username cannot be empty");
             }
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(password))
             {
                 return BadRequest("Password cannot be empty");
             }
             //_context.Database.
-            var userlogin = _context.UserPasswordLogins.Where(x => x.Username == name).Include(x => x.User);
+            var userlogin = _context.UserPasswordLogins.Where(x => x.Username == name);
             if (userlogin.Count() != 1)
             {
                 return BadRequest("User does not exist");
@@ -49,7 +49,7 @@ namespace ReserveerBackend.Controllers
                 return BadRequest("Password was incorrect");
             }
 
-            var userdata = first.User;
+            var userdata = _context.Users.Where(x => x.Id == first.UserID).First();
 
             var identity = userdata.ToClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);

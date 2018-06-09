@@ -11,18 +11,17 @@ namespace ReserveerBackend
     {
         public ReserveerDBContext(DbContextOptions<ReserveerDBContext> options) : base(options)
         {
-            if (Program.Environment == Program.EnvironmentType.ProductionTesting || Program.Environment == Program.EnvironmentType.DevelopmentTesting) //if testing, delete testing database on startup for clean slate
+            if (!this.Database.IsInMemory())
             {
-                Database.EnsureDeleted();
+                Database.Migrate();
             }
-            Database.Migrate();
             if(!(UserPasswordLogins.Where(x => x.Username == "Admin").Count() > 0)){ //check is a user Admin exists, if not, create it
                 var user = new User();
                 user.Email = "";
                 user.EmailNotification = false;
                 user.Role = Role.Admin;
                 user.PasswordLogin = PasswordLoginUtilities.GenerateNewLogin("Admin", "Password");
-                user.PasswordLogin.User = user;
+                user.PasswordLogin.UserID = user.Id;
                 Users.Add(user);
                 UserPasswordLogins.Add(user.PasswordLogin);
                 SaveChanges();

@@ -30,7 +30,6 @@ namespace ReserveerBackend.Controllers
         {
             if(String.IsNullOrEmpty(Username) || String.IsNullOrEmpty(Password) || String.IsNullOrEmpty(email) || String.IsNullOrEmpty(role))
             {
-                //Response.StatusCode = 400;
                 return BadRequest("Fields not filled in");
             }
             Role? castrole = Authorization.FromString(role);
@@ -46,12 +45,14 @@ namespace ReserveerBackend.Controllers
             newuser.Email = email;
             newuser.EmailNotification = false;
             newuser.PasswordLogin = PasswordLoginUtilities.GenerateNewLogin(Username, Password);
-            newuser.PasswordLogin.User = newuser;
+            newuser.PasswordLogin.UserID = newuser.Id;
 
             if (DoesUserExist(newuser.PasswordLogin))
             {
-                Response.StatusCode = 409;
-                return Content("User already exists");
+                var result = new ContentResult();
+                result.StatusCode = 409;
+                result.Content = "User already exists";
+                return result;
             }
 
             _context.Users.Add(newuser);
