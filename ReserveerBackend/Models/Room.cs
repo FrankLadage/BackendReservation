@@ -9,6 +9,18 @@ namespace ReserveerBackend.Models
 {
     public class Room
     {
+        public Room(string name, string location, int capacity, bool tv, bool smartboard, int powersupply)
+        {
+            this.Name = name;
+            this.Location = location;
+            this.Capacity = capacity;
+            this.TV = tv;
+            this.Smartboard = smartboard;
+            this.Powersupply = powersupply;
+        }
+
+        public Room() { }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

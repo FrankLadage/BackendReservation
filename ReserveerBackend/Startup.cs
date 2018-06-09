@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+//using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ReserveerBackend.MessagingSystem;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace ReserveerBackend
@@ -33,6 +34,11 @@ namespace ReserveerBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if(services.BuildServiceProvider().GetService<IEmailService>() == null)
+            {
+                throw new Exception("No email service was provided");
+            }
+
             switch (currentEnvironment.EnvironmentName)
             {
                 case "Development":

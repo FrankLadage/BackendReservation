@@ -10,6 +10,19 @@ namespace ReserveerBackend.Models
 {
     public class User
     {
+        public User() { }
+        public User(Role role, string Email, bool emailnotification)
+        {
+            this.Role = role;
+            this.EmailNotification = emailnotification;
+            this.Email = Email;
+        }
+
+        public User(UserPasswordLogin login, Role role, string email, bool emailnotification) : this(role, email, emailnotification)
+        {
+            PasswordLogin = login;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

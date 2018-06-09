@@ -12,12 +12,16 @@ namespace XUnitTest
     {
         public HttpClient client { get; private set; }
         public ReserveerDBContext database { get; private set; }
+        public UnitTestEmailService EmailService { get; private set; }
 
         public Server()
         {
+            EmailService = new UnitTestEmailService();
+
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .UseEnvironment("Testing");
+            .UseEnvironment("Testing")
+            .WithEmailService(EmailService);
 
             var server = new TestServer(builder);
             database = server.Host.Services.GetService(typeof(ReserveerDBContext)) as ReserveerDBContext;

@@ -161,7 +161,7 @@ namespace ReserveerBackend.Controllers
 
         [HttpPost]
         [Route("Change")]
-        public IActionResult ChangeReservation(int ReservationID, DateTime? StartTime, DateTime? EndTime, string Description, int? RoomID, bool? isactive, bool Force = false)
+        public IActionResult ChangeReservation([FromServices] IEmailService emailservice, int ReservationID, DateTime? StartTime, DateTime? EndTime, string Description, int? RoomID, bool? isactive, bool Force = false)
         {
             User actor = Models.User.FromClaims(User.Claims);
             Room room = null;
@@ -224,7 +224,7 @@ namespace ReserveerBackend.Controllers
                     }
                     if (Authorization.AIsBOrHigher(actor.Role, Role.ServiceDesk)) //service desk or higher can always forcibly change reservations
                     {
-                        return _ForceChangeReservation(isactive, reservation, start, end, room, Description, reservationchange, actor, intersections);
+                        return _ForceChangeReservation(emailservice, isactive, reservation, start, end, room, Description, reservationchange, actor, intersections);
                     }
                     var _intersectionowners = (from x in intersections select x.Participants).SelectMany(x => x).Where(x => x.IsOwner).Select(x => x.UserID);
                     var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Where(z => z.Id == x).First().Role);
@@ -232,14 +232,14 @@ namespace ReserveerBackend.Controllers
                     {
                         return BadRequest("Overlaps with a reservation with owner of equal or higher level.");
                     }
-                    return _ForceChangeReservation(isactive, reservation, start, end, room, Description, reservationchange, actor, intersections); //intersections with reservations from people with lower level
+                    return _ForceChangeReservation(emailservice, isactive, reservation, start, end, room, Description, reservationchange, actor, intersections); //intersections with reservations from people with lower level
                 }
             }
         }
 
         [HttpPost]
         [Route("Add")]
-        public IActionResult AddReservation(DateTime StartTime, DateTime EndTime, string Description, int RoomID, bool Force = false)
+        public IActionResult AddReservation([FromServices] IEmailService emailservice, DateTime StartTime, DateTime EndTime, string Description, int RoomID, bool Force = false)
         {
             if (StartTime == null || EndTime == null || Description == null)
             {
@@ -274,7 +274,7 @@ namespace ReserveerBackend.Controllers
                 }
                 if (Authorization.AIsBOrHigher(Owner.Role, Role.ServiceDesk)) //service desk or higher can always forcibly add reservations
                 {
-                    return Ok(OverrideAddReservation(intersections, StartTime, EndTime, Description, Owner, room).ToString());
+                    return Ok(OverrideAddReservation(emailservice, intersections, StartTime, EndTime, Description, Owner, room).ToString());
                 }
                 var _intersectionowners = (from x in intersections select x.Participants).SelectMany(x => x).Where(x => x.IsOwner).Select(x => x.UserID);
                 var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Where(z => z.Id == x).First().Role);
@@ -282,11 +282,11 @@ namespace ReserveerBackend.Controllers
                 {
                     return BadRequest("Overlaps with a reservation with owner of equal or higher level.");
                 }
-                return Ok(OverrideAddReservation(intersections, StartTime, EndTime, Description, Owner, room).ToString()); //intersections with reservations from people with lower level
+                return Ok(OverrideAddReservation(emailservice, intersections, StartTime, EndTime, Description, Owner, room).ToString()); //intersections with reservations from people with lower level
             }
         }
 
-        private IActionResult _ForceChangeReservation(bool? isactive, Reservation reservation, DateTime start, DateTime end, Room room, string Description, ReservationChange reservationchange, User actor, IEnumerable<Reservation> Intersections)
+        private IActionResult _ForceChangeReservation([FromServices] IEmailService emailservice, bool? isactive, Reservation reservation, DateTime start, DateTime end, Room room, string Description, ReservationChange reservationchange, User actor, IEnumerable<Reservation> Intersections)
         {
             if (!Intersections.All(x => x.IsMutable))
             {
@@ -294,7 +294,7 @@ namespace ReserveerBackend.Controllers
             }
             foreach (var intersection in Intersections)
             {
-                ShortenOtherReservation(start, end, intersection, actor);
+                ShortenOtherReservation(emailservice, start, end, intersection, actor);
             }
             return _ChangeReservation(isactive, reservation, start, end, room, Description, reservationchange);
         }
@@ -315,7 +315,7 @@ namespace ReserveerBackend.Controllers
             return Ok("Succesfully changed reservation");
         }
 
-        private int OverrideAddReservation(IEnumerable<Reservation> Intersections, DateTime StartTime, DateTime EndTime, string Description, User Owner, Room Room, bool IsMutable = true)
+        private int OverrideAddReservation([FromServices] IEmailService emailservice, IEnumerable<Reservation> Intersections, DateTime StartTime, DateTime EndTime, string Description, User Owner, Room Room, bool IsMutable = true)
         {
             if(!Intersections.All(x => x.IsMutable))
             {
@@ -323,7 +323,7 @@ namespace ReserveerBackend.Controllers
             }
             foreach (var intersection in Intersections)
             {
-                ShortenOtherReservation(StartTime, EndTime, intersection, Owner);
+                ShortenOtherReservation(emailservice, StartTime, EndTime, intersection, Owner);
             }
             var reservationid = createreservation(StartTime, EndTime, Description, Owner, Room);
             _context.SaveChanges();
@@ -331,7 +331,7 @@ namespace ReserveerBackend.Controllers
             return reservationid;
         }
 
-        private void ShortenOtherReservation(DateTime StartTime, DateTime EndTime, Reservation OtherReservation, User actor)
+        private void ShortenOtherReservation([FromServices] IEmailService emailservice, DateTime StartTime, DateTime EndTime, Reservation OtherReservation, User actor)
         {
             var oldreservation = OtherReservation.GenerateChangeCopy(actor);
             if(OtherReservation.EndDate > StartTime)
@@ -344,7 +344,7 @@ namespace ReserveerBackend.Controllers
 
             foreach (var participant in OtherReservation.Participants)
             {
-                Notifications.SendReservationChangedMessage(participant.User, actor, OtherReservation, oldreservation);
+                emailservice.SendReservationChangedMessage(participant.User, actor, OtherReservation, oldreservation);
             }
         }
 
