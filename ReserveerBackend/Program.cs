@@ -31,6 +31,7 @@ namespace ReserveerBackend
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .WithEmailService(new EmptyEmailService())
                 .Build();
     }
 }

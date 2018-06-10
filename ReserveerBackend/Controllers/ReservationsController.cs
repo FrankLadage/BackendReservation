@@ -50,8 +50,19 @@ namespace ReserveerBackend.Controllers
 
         [HttpPost]
         [Route("Participants/Add")]
-        public IActionResult AddParticipants(List<Tuple<int, bool>> UserIds, int reservationid)
+        public IActionResult AddParticipants(List<int> userAsOwner, List<int> userAsParticipant, int reservationid)
         {
+            if (userAsParticipant == null)
+                userAsParticipant = new List<int>();
+            if (userAsOwner == null)
+                userAsOwner = new List<int>();
+
+            var UserIds = new List<Tuple<int, bool>>();
+            foreach (var item in userAsOwner)
+                UserIds.Add(new Tuple<int, bool>(item, true));
+            foreach (var item in userAsParticipant)
+                UserIds.Add(new Tuple<int, bool>(item, false));
+
             //Check if user is owner or service desk member or higher
             var owner = Models.User.FromClaims(User.Claims);
             var _reservation = _context.Reservations.Where(x => x.Id == reservationid).Include(x=>x.Participants).Include(x=>x.ParticipantChanges);
