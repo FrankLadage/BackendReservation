@@ -14,7 +14,8 @@ namespace XUnitTest
             var server = new Server();
 
             var usercontroller = new UsersController(server.database);
-            usercontroller.Create("Admin", "Password", "email@email.com", "Admin").Wait();
+            var result = usercontroller.Create("Admin", "Password", "email@email.com", "Admin").Result;
+            Assert.IsType<OkObjectResult>(result);
             return server;
         }
 

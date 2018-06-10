@@ -33,19 +33,15 @@ namespace ReserveerBackend.Controllers
                 return BadRequest("Fields not filled in");
             }
             Role? castrole = Authorization.FromString(role);
-            Role _role = Role.Student;
             if (!castrole.HasValue)
             {
                 return BadRequest("Role is invalid");
             }
-            else
-                _role = castrole.Value;
             var newuser = new User();
-            newuser.Role = _role;
+            newuser.Role = castrole.Value;
             newuser.Email = email;
             newuser.EmailNotification = false;
             newuser.PasswordLogin = PasswordLoginUtilities.GenerateNewLogin(Username, Password);
-            newuser.PasswordLogin.UserID = newuser.Id;
 
             if (DoesUserExist(newuser.PasswordLogin))
             {
@@ -56,7 +52,8 @@ namespace ReserveerBackend.Controllers
             }
 
             _context.Users.Add(newuser);
-            _context.UserPasswordLogins.Add(newuser.PasswordLogin);
+            _context.SaveChanges();
+            newuser.PasswordLogin.UserID = newuser.Id;
             _context.SaveChanges();
             return Ok(string.Format("Succesfully registered user with username: {0}", Username));
         }
@@ -83,6 +80,8 @@ namespace ReserveerBackend.Controllers
 
         private bool DoesUserExist(UserPasswordLogin userlogin)
         {
+            if (_context.UserPasswordLogins.Count() < 1)
+                return false;
             return _context.UserPasswordLogins.First(u => u.Username == userlogin.Username) != null;
         }
     }

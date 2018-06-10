@@ -15,17 +15,6 @@ namespace ReserveerBackend
             {
                 Database.Migrate();
             }
-            if(!(UserPasswordLogins.Where(x => x.Username == "Admin").Count() > 0)){ //check is a user Admin exists, if not, create it
-                var user = new User();
-                user.Email = "";
-                user.EmailNotification = false;
-                user.Role = Role.Admin;
-                user.PasswordLogin = PasswordLoginUtilities.GenerateNewLogin("Admin", "Password");
-                user.PasswordLogin.UserID = user.Id;
-                Users.Add(user);
-                UserPasswordLogins.Add(user.PasswordLogin);
-                SaveChanges();
-            }
         }
         public DbSet<Participant> Participants { get; set; }
         public DbSet<ParticipantChange> ParticipantChanges { get; set; }

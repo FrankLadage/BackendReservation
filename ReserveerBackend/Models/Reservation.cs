@@ -15,7 +15,7 @@ namespace ReserveerBackend.Models
             this.StartDate = start;
             this.EndDate = end;
             this.Active = isactive;
-            this.IsMutable = IsMutable;
+            this.IsMutable = ismutable;
             this.Description = description;
             this.Room = room;
         }
