@@ -8,6 +8,11 @@ using System.Text;
 using System.Linq;
 using Xunit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading;
+using System.Security.Principal;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace XUnitTest
 {
@@ -147,25 +152,17 @@ namespace XUnitTest
         public void AddParticipantAsStudentOwner()
         {
             var server = CleanServer();
-            var loginresult = server.Item1.Post("api/login", new Dictionary<string, string>()
-            {
-                {"name" , "studentlogin" },
-                {"password", "password"}
-            });
-            Assert.Equal(HttpStatusCode.OK, loginresult.StatusCode);
-            //loginresult.
-
             var loggedinuser = server.Item2[3];
             var useraddnotowner = server.Item2[1];
             var useraddowner = server.Item2[2];
             var reservation = server.Item5[3];
+            
+            var controller = new ReservationsController(server.Item1.database);
+            controller.SetUserIdentity(loggedinuser);
 
-            var adduserresult = server.Item1.Post("api/Reservations/Participants/Add", new Dictionary<string, string> {
-                {"userAsOwner", $"[{useraddowner.Id}]"},
-                {"userAsParticipant", $"[{useraddnotowner.Id}]"},
-                {"reservationid", reservation.Id.ToString() }
-            });
-            Assert.Equal(HttpStatusCode.OK, adduserresult.StatusCode);
+            var result = controller.AddParticipants(new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
+            
+            Assert.IsType<OkObjectResult>(result);
             Assert.True(server.Item1.database.Participants.Where(x => x.User == loggedinuser).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == true).Count() == 1);
             Assert.True(server.Item1.database.Participants.Where(x => x.User == useraddnotowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == false).Count() == 1);
             Assert.True(server.Item1.database.Participants.Where(x => x.User == useraddowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == true).Count() == 1);
