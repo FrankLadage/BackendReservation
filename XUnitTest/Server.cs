@@ -15,7 +15,6 @@ namespace XUnitTest
         private TestServer server;
         public ReserveerDBContext database { get; private set; }
         public UnitTestEmailService EmailService { get; private set; }
-        Dictionary<string, string> Cookies = new Dictionary<string, string>();
         public Server()
         {
             EmailService = new UnitTestEmailService();
@@ -30,30 +29,9 @@ namespace XUnitTest
             client = server.CreateClient();
         }
 
-        private void UpdateCookies(HttpResponseMessage message)
-        {
-            var cookies = message.Headers.GetValues("Set-Cookie").Select(x => x.Split('=')).Where(x => x.Length == 2);
-            foreach (var item in cookies)
-            {
-                Cookies.Add(item[0], item[1]);
-            }
-        }
-        private string GetCookies()
-        {
-            string cookie = "";
-            foreach (var item in Cookies)
-            {
-                cookie += item.Key + "=" + item.Value + ";";
-            }
-            return cookie;
-        }
-
         public HttpResponseMessage Post(string URI, IEnumerable<KeyValuePair<string, string>> content)
         {
-            var result = server.CreateRequest(URI).AddHeader("Cookie", GetCookies()).PostAsync().Result;
-            //var result = client.PostAsync(URI, new FormUrlEncodedContent(content)).Result;
-            UpdateCookies(result);
-            return result;
+            return client.PostAsync(URI, new FormUrlEncodedContent(content)).Result;
         }
         public HttpResponseMessage Get(string URI)
         {

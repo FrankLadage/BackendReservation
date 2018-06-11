@@ -14718,27 +14718,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Ontspanning\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
+    "C:\\Users\\marcel\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\Projects\\BackendReservation\\XUnitTest\\XUnitTest.csproj",
+      "projectUniqueName": "C:\\Projects\\BackendReservation\\XUnitTest\\XUnitTest.csproj",
       "projectName": "XUnitTest",
-      "projectPath": "F:\\Projects\\BackendReservation\\XUnitTest\\XUnitTest.csproj",
-      "packagesPath": "C:\\Users\\Ontspanning\\.nuget\\packages\\",
-      "outputPath": "F:\\Projects\\BackendReservation\\XUnitTest\\obj\\",
+      "projectPath": "C:\\Projects\\BackendReservation\\XUnitTest\\XUnitTest.csproj",
+      "packagesPath": "C:\\Users\\marcel\\.nuget\\packages\\",
+      "outputPath": "C:\\Projects\\BackendReservation\\XUnitTest\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Ontspanning\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
+        "C:\\Users\\marcel\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
@@ -14750,8 +14747,8 @@
       "frameworks": {
         "netcoreapp2.0": {
           "projectReferences": {
-            "F:\\Projects\\BackendReservation\\ReserveerBackend\\ReserveerBackend.csproj": {
-              "projectPath": "F:\\Projects\\BackendReservation\\ReserveerBackend\\ReserveerBackend.csproj"
+            "C:\\Projects\\BackendReservation\\ReserveerBackend\\ReserveerBackend.csproj": {
+              "projectPath": "C:\\Projects\\BackendReservation\\ReserveerBackend\\ReserveerBackend.csproj"
             }
           }
         }

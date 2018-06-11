@@ -1,0 +1,2 @@
+Change controller.user claims in object
+Dont try to do cookies

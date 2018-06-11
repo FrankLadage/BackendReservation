@@ -11,7 +11,7 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryContentRootAttribute("ReserveerBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "F:\\Projects\\BackendReservation\\ReserveerBackend", "ReserveerBackend.csproj", "0")]
+[assembly: Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryContentRootAttribute("ReserveerBackend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "C:\\Projects\\BackendReservation\\ReserveerBackend", "ReserveerBackend.csproj", "0")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("XUnitTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
