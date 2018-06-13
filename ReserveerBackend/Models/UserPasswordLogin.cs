@@ -16,6 +16,6 @@ namespace ReserveerBackend.Models
         [Required]
         public byte[] Salt { get; set; }
         [Required]
-        public User User { get; set; }
+        public int UserID { get; set; }
     }
 }

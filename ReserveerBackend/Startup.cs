@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+//using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -14,15 +14,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ReserveerBackend.MessagingSystem;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace ReserveerBackend
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        IHostingEnvironment currentEnvironment;
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            currentEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -30,29 +34,29 @@ namespace ReserveerBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString;
-            switch (Program.Environment)
+            if(services.BuildServiceProvider().GetService<IEmailService>() == null)
             {
-                case Program.EnvironmentType.Development:
-                    connectionString = Configuration.GetConnectionString("Development");
+                throw new Exception("No email service was provided");
+            }
+
+            switch (currentEnvironment.EnvironmentName)
+            {
+                case "Development":
+                    services.AddDbContext<ReserveerDBContext>(options =>
+                        options.UseNpgsql(Configuration.GetConnectionString("Development")
+                            , b => b.MigrationsAssembly("ReserveerBackend")));
                     break;
-                case Program.EnvironmentType.ProductionTesting:
-                    connectionString = Configuration.GetConnectionString("ProductionTesting");
+                case "Production":
+                    services.AddDbContext<ReserveerDBContext>(options =>
+                        options.UseNpgsql(Configuration.GetConnectionString("Production")
+                            , b => b.MigrationsAssembly("ReserveerBackend")));;
                     break;
-                case Program.EnvironmentType.DevelopmentTesting:
-                    connectionString = Configuration.GetConnectionString("DevelopmentTesting");
-                    break;
-                case Program.EnvironmentType.Production:
-                    connectionString = Configuration.GetConnectionString("Production");
-                    break;
-                case Program.EnvironmentType.JenkinsTest:
-                    connectionString = Configuration.GetConnectionString("JenkinsTest");
+                case "Testing":
+                    services.AddDbContext<ReserveerDBContext>(options =>
+                        options.UseInMemoryDatabase());
                     break;
                 default: throw new NotImplementedException();
             }
-            services.AddDbContext<ReserveerDBContext>(options =>
-                options.UseNpgsql(connectionString
-                    , b => b.MigrationsAssembly("ReserveerBackend")));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options => {

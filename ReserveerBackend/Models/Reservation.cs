@@ -9,6 +9,16 @@ namespace ReserveerBackend.Models
 {
     public class Reservation
     {
+        public Reservation() { }
+        public Reservation(DateTime start, DateTime end, bool isactive, bool ismutable, string description, Room room)
+        {
+            this.StartDate = start;
+            this.EndDate = end;
+            this.Active = isactive;
+            this.IsMutable = ismutable;
+            this.Description = description;
+            this.Room = room;
+        }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

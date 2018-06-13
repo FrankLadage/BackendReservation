@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReserveerBackend.Models;
@@ -19,6 +20,7 @@ namespace ReserveerBackend.Controllers
         }
 
         [HttpPost]
+        [Route("GetMatch")]
         public IEnumerable<Room> GetMatch(int? Id, string Name, string Location, int? MinCapacity, int? MaxCapacity, bool? TV, bool? Smartboard, int? MinPowersupply, int? MaxPowersupply)
         {
             var validrooms = _context.Rooms.AsQueryable();
@@ -44,6 +46,27 @@ namespace ReserveerBackend.Controllers
             return validrooms;
         }
 
+        [HttpPost]
+        [Route("Create")]
+        [Authorize(Roles = Authorization.ServiceOrHigher)]
+        public IActionResult CreateRoom(string name, string location, int capacity, bool TV, bool Smartboard, int Powersupply)
+        {
+            if (name == null)
+                return BadRequest("Name cannot be null");
+            if (location == null)
+                return BadRequest("Location cannot be null");
 
+
+            var room = new Room();
+            room.Capacity = capacity;
+            room.Location = location;
+            room.Name = name;
+            room.Powersupply = Powersupply;
+            room.Smartboard = Smartboard;
+            room.TV = TV;
+            _context.Rooms.Add(room);
+            _context.SaveChanges();
+            return Ok(room.Id);
+        }
     }
 }
