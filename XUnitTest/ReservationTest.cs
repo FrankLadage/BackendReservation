@@ -18,154 +18,150 @@ namespace XUnitTest
 {
     public class ReservationTest
     {
-        private Tuple<Server, User[], Room[], UserPasswordLogin[], Reservation[], Participant[]> CleanServer()
+        private class ServerWithState
         {
-            var server = new Server();
-
-            var passwordlogins = new UserPasswordLogin[]
+            public Server server;
+            public UserPasswordLogin adminlogin, sdlogin, teacherlogin, studentlogin, adminstaticlogin, sdstaticlogin, teacherstaticlogin, studentstaticlogin;
+            public User admin1, admin2, sd1, sd2, teacher1, teacher2, student1, student2;
+            public Room room1, room2, room3, room4, room5;
+            public Reservation reservationA, reservationB, reservationC, reservationD, reservationE, reservationF, reservationG;
+            public Participant participant1, participant2, participant3, participant4, participant5, participant6;
+            public ServerWithState()
             {
-                PasswordLoginUtilities.GenerateNewLogin("adminlogin", "password"),
-                PasswordLoginUtilities.GenerateNewLogin("sdlogin", "password"),
-                PasswordLoginUtilities.GenerateNewLogin("teacherlogin", "password"),
-                PasswordLoginUtilities.GenerateNewLogin("studentlogin", "password"),
 
-                PasswordLoginUtilities.GenerateNewLogin("adminstatic", "password"),
-                PasswordLoginUtilities.GenerateNewLogin("sdstatic", "password"),
-                PasswordLoginUtilities.GenerateNewLogin("teacherstatic", "password"),
-                PasswordLoginUtilities.GenerateNewLogin("studentstatic", "password")
-            };
+                server = new Server();
 
-            var users = new User[]{
-                new User(passwordlogins[0], Role.Admin, "admin1", true),
-                new User(passwordlogins[1], Role.ServiceDesk, "sd1", true),
-                new User(passwordlogins[2], Role.Teacher, "teacher1", true),
-                new User(passwordlogins[3], Role.Student, "student1", true),
+                adminlogin = PasswordLoginUtilities.GenerateNewLogin("adminlogin", "password");
+                sdlogin = PasswordLoginUtilities.GenerateNewLogin("sdlogin", "password");
+                teacherlogin = PasswordLoginUtilities.GenerateNewLogin("teacherlogin", "password");
+                studentlogin = PasswordLoginUtilities.GenerateNewLogin("studentlogin", "password");
 
-                new User(passwordlogins[4], Role.Admin, "admin2", true),
-                new User(passwordlogins[5], Role.ServiceDesk, "sd2", true),
-                new User(passwordlogins[6], Role.Teacher, "teacher2", true),
-                new User(passwordlogins[7], Role.Student, "student2", true)
-            };
-            server.database.Users.AddRange(users);
-            server.database.UserPasswordLogins.AddRange(passwordlogins);
+                adminstaticlogin = PasswordLoginUtilities.GenerateNewLogin("adminstatic", "password");
+                sdstaticlogin = PasswordLoginUtilities.GenerateNewLogin("sdstatic", "password");
+                teacherstaticlogin = PasswordLoginUtilities.GenerateNewLogin("teacherstatic", "password");
+                studentstaticlogin = PasswordLoginUtilities.GenerateNewLogin("studentstatic", "password");
 
-            var rooms = new Room[]
-            {
-                new Room("one", "a", 10, true, true, 5),
-                new Room("two", "b", 20, true, true, 4),
-                new Room("three", "c", 30, true, true, 3),
-                new Room("four", "d", 40, true, true, 2),
-                new Room("five", "e", 50, true, true, 1)
-            };
-            server.database.Rooms.AddRange(rooms);
+                admin1 = new User(adminlogin, Role.Admin, "admin1", true);
+                sd1 = new User(sdlogin, Role.ServiceDesk, "sd1", true);
+                teacher1 = new User(teacherlogin, Role.Teacher, "teacher1", true);
+                student1 = new User(studentlogin, Role.Student, "student1", true);
 
-            var reservations = new Reservation[]
-            {
-                new Reservation(new DateTime(2000, 1, 1), new DateTime(2000, 1, 2), true, true, "aaaa", rooms[0]),
-                new Reservation(new DateTime(2000, 1, 3), new DateTime(2000, 1, 4), true, true, "bbbb", rooms[1]),
-                new Reservation(new DateTime(2000, 1, 5), new DateTime(2000, 1, 6), true, true, "cccc", rooms[2]),
-                new Reservation(new DateTime(2000, 1, 7), new DateTime(2000, 1, 8), true, true, "dddd", rooms[3]),
+                admin2 = new User(adminstaticlogin, Role.Admin, "admin2", true);
+                sd2 = new User(sdstaticlogin, Role.ServiceDesk, "sd2", true);
+                teacher2 = new User(teacherstaticlogin, Role.Teacher, "teacher2", true);
+                student2 = new User(studentstaticlogin, Role.Student, "student2", true);
+            
+                server.database.Users.AddRange(new User[] { admin1, admin2, sd1, sd2, teacher1, teacher2, student1, student2});
+                server.database.UserPasswordLogins.AddRange(new UserPasswordLogin[] { adminlogin, sdlogin, teacherlogin, studentlogin, adminstaticlogin, sdstaticlogin, teacherstaticlogin, studentstaticlogin});
 
 
-                new Reservation(new DateTime(2000, 1, 1), new DateTime(2000, 1, 2), true, false, "eeee", rooms[0]),
-                new Reservation(new DateTime(2000, 1, 3), new DateTime(2000, 1, 4), true, false, "ffff", rooms[1]),
+                room1 = new Room("one", "a", 10, true, true, 5);
+                room2 = new Room("two", "b", 20, true, true, 4);
+                room3 = new Room("three", "c", 30, true, true, 3);
+                room4 = new Room("four", "d", 40, true, true, 2);
+                room5 = new Room("five", "e", 50, true, true, 1);
 
-                new Reservation(new DateTime(2100, 1, 3), new DateTime(2100, 1, 4), false, true, "gggg", rooms[4])
-            };
-            server.database.Reservations.AddRange(reservations);
+                server.database.Rooms.AddRange(new Room[] { room1, room2, room3, room4, room5});
 
-            var participants = new Participant[]
-            {
-                new Participant(reservations[0], users[0], true, new DateTime(1990,1,1)),
-                new Participant(reservations[1], users[1], true, new DateTime(1990,1,1)),
-                new Participant(reservations[2], users[2], true, new DateTime(1990,1,1)),
-                new Participant(reservations[3], users[3], true, new DateTime(1990,1,1)),
+                reservationA = new Reservation(new DateTime(2000, 1, 1), new DateTime(2000, 1, 2), true, true, "aaaa", room1);
+                reservationB = new Reservation(new DateTime(2000, 1, 3), new DateTime(2000, 1, 4), true, true, "bbbb", room2);
+                reservationC = new Reservation(new DateTime(2000, 1, 5), new DateTime(2000, 1, 6), true, true, "cccc", room3);
+                reservationD = new Reservation(new DateTime(2000, 1, 7), new DateTime(2000, 1, 8), true, true, "dddd", room4);
+                reservationE = new Reservation(new DateTime(2000, 1, 1), new DateTime(2000, 1, 2), true, false, "eeee", room3);
+                reservationF = new Reservation(new DateTime(2000, 1, 3), new DateTime(2000, 1, 4), true, false, "ffff", room2);
+                reservationG = new Reservation(new DateTime(2100, 1, 3), new DateTime(2100, 1, 4), false, true, "gggg", room5);
+                
+                server.database.Reservations.AddRange(new Reservation[] { reservationA, reservationB, reservationC, reservationD, reservationE, reservationF, reservationG});
 
-                new Participant(reservations[4], users[0], true, new DateTime(1990,1,1)),
-                new Participant(reservations[5], users[3], true, new DateTime(1990,1,1))
-            };
-            server.database.AddRange(participants);
-            server.database.SaveChanges();
-            return new Tuple<Server, User[], Room[], UserPasswordLogin[], Reservation[], Participant[]>
-                (server, users, rooms, passwordlogins, reservations, participants);
+
+                participant1 = new Participant(reservationA, admin1, true, new DateTime(1990, 1, 1));
+                participant2 = new Participant(reservationB, sd1, true, new DateTime(1990, 1, 1));
+                participant3 = new Participant(reservationC, teacher1, true, new DateTime(1990, 1, 1));
+                participant4 = new Participant(reservationD, student1, true, new DateTime(1990, 1, 1));
+
+                participant5 = new Participant(reservationE, admin1, true, new DateTime(1990, 1, 1));
+                participant6 = new Participant(reservationF, student1, true, new DateTime(1990, 1, 1));
+
+                server.database.AddRange(new Participant[] { participant1, participant2, participant3, participant4, participant5, participant6});
+                server.database.SaveChanges();
+            }
         }
 
         [Fact]
         public void GetAllReservations()
         {
-            var server = CleanServer();
-            var controller = new ReservationsController(server.Item1.database);
+            var server = new ServerWithState();
+            var controller = new ReservationsController(server.server.database);
             var result = controller.GetMatch(null, null, null, null, null, null, null);
-            Assert.True(result.ToHashSet().SetEquals(server.Item5));
+            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.reservationA, server.reservationB, server.reservationC, server.reservationD, server.reservationE, server.reservationF, server.reservationG }));
         }
         [Fact]
         public void GetImmutable()
         {
-            var server = CleanServer();
-            var controller = new ReservationsController(server.Item1.database);
+            var server = new ServerWithState();
+            var controller = new ReservationsController(server.server.database);
             var result = controller.GetMatch(null, null, false, null, null, null, null);
-            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.Item5[4], server.Item5[5] }));
+            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.reservationE, server.reservationF }));
         }
         [Fact]
         public void GetWithDescription()
         {
-            var server = CleanServer();
-            var controller = new ReservationsController(server.Item1.database);
+            var server = new ServerWithState();
+            var controller = new ReservationsController(server.server.database);
             var result = controller.GetMatch(null, null, null, "e", null, null, null);
-            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.Item5[4] }));
+            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.reservationE }));
         }
         [Fact]
         public void GetBetweenDates()
         {
-            var server = CleanServer();
-            var controller = new ReservationsController(server.Item1.database);
+            var server = new ServerWithState();
+            var controller = new ReservationsController(server.server.database);
             var result = controller.GetMatch(null, null, null, null, null, new DateTime(2000, 1, 4, 10, 0, 0), new DateTime(2000, 1, 8, 10, 0, 0));
-            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.Item5[2], server.Item5[3] }));
+            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.reservationC, server.reservationD }));
         }
         [Fact]
         public void GetRoom()
         {
-            var server = CleanServer();
-            var controller = new ReservationsController(server.Item1.database);
-            var result = controller.GetMatch(null, null, null, null, server.Item3[0].Id, null, null);
-            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.Item5[0], server.Item5[4] }));
+            var server = new ServerWithState();
+            var controller = new ReservationsController(server.server.database);
+            var result = controller.GetMatch(null, null, null, null, server.room3.Id, null, null);
+            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.reservationC, server.reservationE }));
         }
         [Fact]
         public void GetInactive()
         {
-            var server = CleanServer();
-            var controller = new ReservationsController(server.Item1.database);
+            var server = new ServerWithState();
+            var controller = new ReservationsController(server.server.database);
             var result = controller.GetMatch(null, false, null, null, null, null, null);
-            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.Item5[6] }));
+            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.reservationG }));
         }
         [Fact]
         public void GetID()
         {
-            var server = CleanServer();
-            var controller = new ReservationsController(server.Item1.database);
-            var result = controller.GetMatch(server.Item5[0].Id, null, null, null, null, null, null);
-            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.Item5[0] }));
+            var server = new ServerWithState();
+            var controller = new ReservationsController(server.server.database);
+            var result = controller.GetMatch(server.reservationA.Id, null, null, null, null, null, null);
+            Assert.True(result.ToHashSet().SetEquals(new Reservation[] { server.reservationA }));
         }
-
 
         [Fact]
         public void AddParticipantAsStudentOwner()
         {
-            var server = CleanServer();
-            var loggedinuser = server.Item2[3];
-            var useraddnotowner = server.Item2[1];
-            var useraddowner = server.Item2[2];
-            var reservation = server.Item5[3];
+            var server = new ServerWithState();
+            var loggedinuser = server.student1;
+            var useraddnotowner = server.sd1;
+            var useraddowner = server.teacher1;
+            var reservation = server.reservationD;
             
-            var controller = new ReservationsController(server.Item1.database);
+            var controller = new ReservationsController(server.server.database);
             controller.SetUserIdentity(loggedinuser);
 
             var result = controller.AddParticipants(new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
             
             Assert.IsType<OkObjectResult>(result);
-            Assert.True(server.Item1.database.Participants.Where(x => x.User == loggedinuser).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == true).Count() == 1);
-            Assert.True(server.Item1.database.Participants.Where(x => x.User == useraddnotowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == false).Count() == 1);
-            Assert.True(server.Item1.database.Participants.Where(x => x.User == useraddowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == true).Count() == 1);
+            Assert.True(server.server.database.Participants.Where(x => x.User == loggedinuser).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == true).Count() == 1);
+            Assert.True(server.server.database.Participants.Where(x => x.User == useraddnotowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == false).Count() == 1);
+            Assert.True(server.server.database.Participants.Where(x => x.User == useraddowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == true).Count() == 1);
         }
 
     }
