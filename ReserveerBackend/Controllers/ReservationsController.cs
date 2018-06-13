@@ -71,15 +71,14 @@ namespace ReserveerBackend.Controllers
                 return BadRequest("Could not find reservation");
             }
             var reservation = _reservation.First();
-            if(reservation.Participants.Where(x=> x.UserID == owner.Id).Where(x => x.IsOwner).Count() != 1 || Authorization.AIsBOrHigher(owner.Role, Role.ServiceDesk))
+            if (!Authorization.AIsBOrHigher(owner.Role, Role.ServiceDesk))
             {
-                return Unauthorized();
+                if (reservation.Participants.Where(x => x.UserID == owner.Id).Where(x => x.IsOwner).Count() != 1)
+                {
+                    return Unauthorized();
+                }
             }
 
-            if (UserIds == null)
-            {
-                return BadRequest("UserId's cannot be empty");
-            }
             var users = from id in UserIds select new Tuple<User, bool>(_context.Users.Where(x => x.Id == id.Item1).FirstOrDefault(), id.Item2);
             if(!users.All(x => x.Item1 != null))
             {
