@@ -19,19 +19,24 @@ namespace ReserveerBackend.Controllers
             _context = context;
         }
         [HttpPost]
-        public IActionResult PostTemperature(float value, int sensorID, int roomid)
+        public IActionResult PostTemperature(float value, int sensorID, int roomid, string token)
         {
-            var sensor = _context.TemperatureSensors.Where(x => x.Id == sensorID).FirstOrDefault();
-            if(sensor == null)
+            var sensorId = _context.TemperatureSensors.Where(x => x.Id == sensorID).FirstOrDefault();
+            if(sensorId == null)
             {
                 return BadRequest("Sensor ID is not valid");
+            }
+            var sensortoken = _context.TemperatureSensors.Where(x => x.Token == token).FirstOrDefault();
+            if (sensortoken == null)
+            {
+                return BadRequest("Sensor token invalid");
             }
             var room = _context.Rooms.Where(x => x.Id == roomid).FirstOrDefault();
             if(room == null)
             {
                 return BadRequest("RoomID is not a valid room");
             }
-            _context.Temperatures.Add(new Models.Temperature(sensor, value, room, DateTime.Now));
+            _context.Temperatures.Add(new Models.Temperature(sensorId, value, room, DateTime.Now));
             _context.SaveChanges();
             return Ok("Succesfully added temperature");
         }
@@ -54,12 +59,13 @@ namespace ReserveerBackend.Controllers
         }
         [HttpPost]
         [Route("Sensors/new")]
-        public int MakeNewRoom()
+        public TemperatureSensor MakeNewSensor()
         {
-            var i = new TemperatureSensor();
+            string Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            var i = new TemperatureSensor(Token);
             _context.Add(i);
             _context.SaveChanges();
-            return i.Id;
+            return i;
         }
     }
 }
