@@ -193,6 +193,8 @@ namespace ReserveerBackend.Controllers
                     return BadRequest("Reservation could not be found");
                 }
                 reservation = _reservation.First();
+                if (room == null)
+                    room = reservation.Room;
 
                 if(reservation.Participants.Where(x => x.IsOwner).Where(x => x.UserID == actor.Id).Count() != 1)
                 {
@@ -221,7 +223,11 @@ namespace ReserveerBackend.Controllers
                 }
 
                 var intersections = FindIntersections(start, end, room);
-                if (intersections.Count() <= 1)
+                if (intersections.Count() <= 0)
+                {
+                    return _ChangeReservation(isactive, reservation, start, end, room, Description, reservationchange);
+                }
+                else if(intersections.Count() == 1 && intersections.First() == reservation)
                 {
                     return _ChangeReservation(isactive, reservation, start, end, room, Description, reservationchange);
                 }
@@ -230,19 +236,23 @@ namespace ReserveerBackend.Controllers
                     intersections = intersections.Where(x => x.Id != reservation.Id); //remove self
                     if (!Force)
                     {
-                        return BadRequest("There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.");
+                        return new ObjectResult("Conflict: There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.")
+                        {
+                            StatusCode = 409
+                        };
                     }
                     if (Authorization.AIsBOrHigher(actor.Role, Role.ServiceDesk)) //service desk or higher can always forcibly change reservations
                     {
                         return _ForceChangeReservation(emailservice, isactive, reservation, start, end, room, Description, reservationchange, actor, intersections);
                     }
+                    var isOwnerOfIntersections = intersections.Select(x => x.Participants.Select(z => z.UserID).Contains(actor.Id)).All(x => x);
                     var _intersectionowners = (from x in intersections select x.Participants).SelectMany(x => x).Where(x => x.IsOwner).Select(x => x.UserID);
                     var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Where(z => z.Id == x).First().Role);
-                    if (!_intersectionownerLevels.All(x => Authorization.AIsHigherThanB(actor.Role, x))) //intersections with reservation from people of higher or equal level
+                    if (isOwnerOfIntersections || _intersectionownerLevels.All(x => Authorization.AIsHigherThanB(actor.Role, x))) //intersections with reservation from people of higher or equal level
                     {
-                        return BadRequest("Overlaps with a reservation with owner of equal or higher level.");
+                        return _ForceChangeReservation(emailservice, isactive, reservation, start, end, room, Description, reservationchange, actor, intersections); //intersections with reservations from people with lower level
                     }
-                    return _ForceChangeReservation(emailservice, isactive, reservation, start, end, room, Description, reservationchange, actor, intersections); //intersections with reservations from people with lower level
+                    return Unauthorized();
                 }
             }
         }
@@ -385,6 +395,8 @@ namespace ReserveerBackend.Controllers
 
         private IEnumerable<Reservation> FindIntersections(DateTime StartTime, DateTime EndTime, Room room)
         {
+            if (room == null)
+                throw new ArgumentNullException("Room cannot be null, need a room to search for intersections");
             if (StartTime > EndTime)
                 throw new Exception("Starttime is later than endtime");
             return _context.Reservations.AsQueryable().Where(x => x.Room == room).Where(x => !(x.StartDate >= EndTime || x.EndDate <= StartTime)).Include(x => x.Participants);
