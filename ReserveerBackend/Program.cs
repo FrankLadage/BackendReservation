@@ -25,11 +25,17 @@ namespace ReserveerBackend
             i.Write(shutdownkey);
             i.Close();
 
-            BuildWebHost(args).Run();
+            var config = new ConfigurationBuilder()
+                .AddCommandLine(args)
+                .AddEnvironmentVariables(prefix: "ASPNETCORE_")
+                .Build();
+            BuildWebHost(config).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(IConfigurationRoot config) =>
+            WebHost.CreateDefaultBuilder()
+                .UseConfiguration(config)
+                .UseUrls(config.GetValue<string>("server.urls"))
                 .UseStartup<Startup>()
                 .WithEmailService(new EmptyEmailService())
                 .Build();

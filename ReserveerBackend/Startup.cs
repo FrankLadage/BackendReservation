@@ -34,7 +34,7 @@ namespace ReserveerBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if(services.BuildServiceProvider().GetService<IEmailService>() == null)
+            if (services.BuildServiceProvider().GetService<IEmailService>() == null)
             {
                 throw new Exception("No email service was provided");
             }
