@@ -6,6 +6,8 @@
 /obj/*
 /ReserveerBackend/obj/*
 /ReserveerBackend/bin/*
+/XUnitTest/obj/*
+/XUnitTest/bin/*
 /.vs/*
 
 # dependencies

@@ -220,7 +220,7 @@ namespace ReserveerBackend.Controllers
                     return BadRequest("Startdate cannot come before end date");
                 }
 
-                var intersections = FindIntersections(start, end);
+                var intersections = FindIntersections(start, end, room);
                 if (intersections.Count() <= 1)
                 {
                     return _ChangeReservation(isactive, reservation, start, end, room, Description, reservationchange);
@@ -269,18 +269,24 @@ namespace ReserveerBackend.Controllers
 
             lock (ReservationLock) //lock all intersection checking and reservation writing logic to prevent changes to the database during the checking phase
             {
-                var intersections = FindIntersections(StartTime, EndTime);
+                var intersections = FindIntersections(StartTime, EndTime, room);
                 if (intersections.Count() == 0) //No intersections with other reservations, add it
                 {
                     return Ok(createreservation(StartTime, EndTime, Description, Owner, room).ToString());
                 }
                 if (!intersections.All(x => x.IsMutable == true)) //intersection with an immutable reservation
                 {
-                    return BadRequest("Overlaps with an immutable reservation.");
+                    return new ObjectResult("Conflict: Overlaps with an immutable reservation.")
+                    {
+                        StatusCode = 409
+                    };
                 }
                 if (!Force)
                 {
-                    return BadRequest("There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.");
+                    return new ObjectResult("Conflict: There is overlap with existing reservations, please set 'Force' to true in your request if you wish to forcibly insert it.")
+                    {
+                        StatusCode = 409
+                    };
                 }
                 if (Authorization.AIsBOrHigher(Owner.Role, Role.ServiceDesk)) //service desk or higher can always forcibly add reservations
                 {
@@ -290,7 +296,10 @@ namespace ReserveerBackend.Controllers
                 var _intersectionownerLevels = (from x in _intersectionowners select _context.Users.Where(z => z.Id == x).First().Role);
                 if (!_intersectionownerLevels.All(x => Authorization.AIsHigherThanB(Owner.Role, x))) //intersections with reservation from people of higher or equal level
                 {
-                    return BadRequest("Overlaps with a reservation with owner of equal or higher level.");
+                    return new ObjectResult("Conflict: Overlaps with a reservation with owner of equal or higher level.")
+                    {
+                        StatusCode = 409
+                    };
                 }
                 return Ok(OverrideAddReservation(emailservice, intersections, StartTime, EndTime, Description, Owner, room).ToString()); //intersections with reservations from people with lower level
             }
@@ -344,12 +353,12 @@ namespace ReserveerBackend.Controllers
         private void ShortenOtherReservation([FromServices] IEmailService emailservice, DateTime StartTime, DateTime EndTime, Reservation OtherReservation, User actor)
         {
             var oldreservation = OtherReservation.GenerateChangeCopy(actor);
-            if(OtherReservation.EndDate > StartTime)
+            if(OtherReservation.EndDate > StartTime && OtherReservation.StartDate < StartTime)
                 OtherReservation.EndDate = StartTime;
-            if (OtherReservation.StartDate < EndTime)
+            if (OtherReservation.StartDate < EndTime && OtherReservation.EndDate > EndTime)
                 OtherReservation.StartDate = EndTime;
 
-            _context.Reservations.Add(OtherReservation);
+            //_context.Reservations.Add(OtherReservation);
             _context.ReservationChanges.Add(oldreservation);
 
             foreach (var participant in OtherReservation.Participants)
@@ -368,15 +377,18 @@ namespace ReserveerBackend.Controllers
             reservation.IsMutable = IsMutable;
             reservation.Room = Room;
             _context.Reservations.Add(reservation);
+
+            _context.Participants.Add(new Participant(reservation, Owner, true, DateTime.Now));
+
             _context.SaveChanges();
             return reservation.Id;
         }
 
-        private IEnumerable<Reservation> FindIntersections(DateTime StartTime, DateTime EndTime)
+        private IEnumerable<Reservation> FindIntersections(DateTime StartTime, DateTime EndTime, Room room)
         {
             if (StartTime > EndTime)
                 throw new Exception("Starttime is later than endtime");
-            return _context.Reservations.AsQueryable().Where(x => !(x.StartDate >= EndTime || x.EndDate <= StartTime)).Include(x => x.Participants);
+            return _context.Reservations.AsQueryable().Where(x => x.Room == room).Where(x => !(x.StartDate >= EndTime || x.EndDate <= StartTime)).Include(x => x.Participants);
         }
     }
 }
