@@ -19,7 +19,7 @@ namespace ReserveerBackend.Controllers
     public class ReservationsController : Controller
     {
         private readonly ReserveerDBContext _context;
-        private readonly object ReservationLock = new object();
+        //private readonly object ReservationLock = new object();
 
         public ReservationsController(ReserveerDBContext context)
         {
@@ -184,11 +184,11 @@ namespace ReserveerBackend.Controllers
                 }
                 room = rooms.First();
             }
-            lock (ReservationLock)
+            lock (_context.ReservationLock)
             {
                 var _reservation = _context.Reservations.Where(x => x.Id == ReservationID).Include(x => x.Participants);
                 Reservation reservation = null;
-                if(_reservation.Count() != 0)
+                if(_reservation.Count() == 0)
                 {
                     return BadRequest("Reservation could not be found");
                 }
@@ -267,7 +267,7 @@ namespace ReserveerBackend.Controllers
             var room = rooms.First();
             var Owner = Models.User.FromClaims(User.Claims);
 
-            lock (ReservationLock) //lock all intersection checking and reservation writing logic to prevent changes to the database during the checking phase
+            lock (_context.ReservationLock) //lock all intersection checking and reservation writing logic to prevent changes to the database during the checking phase
             {
                 var intersections = FindIntersections(StartTime, EndTime, room);
                 if (intersections.Count() == 0) //No intersections with other reservations, add it
@@ -328,7 +328,6 @@ namespace ReserveerBackend.Controllers
                 reservation.Room = room;
             if (Description != null)
                 reservation.Description = Description;
-            _context.Add(reservation);
             _context.ReservationChanges.Add(reservationchange);
             _context.SaveChanges();
             return Ok("Succesfully changed reservation");

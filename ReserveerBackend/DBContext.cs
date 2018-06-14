@@ -27,7 +27,8 @@ namespace ReserveerBackend
         public DbSet<User> Users { get; set; }
         public DbSet<UserPasswordLogin> UserPasswordLogins { get; set; }
         public DbSet<Whiteboard> Whiteboards { get; set; }
-        
+
+        public readonly object ReservationLock = new object();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
