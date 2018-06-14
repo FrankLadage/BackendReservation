@@ -189,6 +189,8 @@ namespace ReserveerBackend.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Token");
+
                     b.HasKey("Id");
 
                     b.ToTable("TemperatureSensors");
