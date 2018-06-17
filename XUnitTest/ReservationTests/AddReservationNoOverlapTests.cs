@@ -21,11 +21,10 @@ namespace XUnitTest.ReservationTests
             server.database.SaveChanges();
             var controller = new ReservationsController(server.database);
             controller.SetUserIdentity(user);
-            var emailservice = new UnitTestEmailService();
             var startdate = new DateTime(2000, 1, 1);
             var enddate = new DateTime(2000, 3, 1);
             var description = "Reservation";
-            var result = controller.AddReservation(emailservice, startdate, enddate, description, room.Id);
+            var result = controller.AddReservation(server.EmailService, startdate, enddate, description, room.Id);
 
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal((result as OkObjectResult).Value, server.database.Reservations.First().Id.ToString());

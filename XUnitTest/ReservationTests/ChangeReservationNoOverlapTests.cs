@@ -33,17 +33,16 @@ namespace XUnitTest.ReservationTests
             server.database.SaveChanges();
             var controller = new ReservationsController(server.database);
             controller.SetUserIdentity(owner);
-            var emailservice = new UnitTestEmailService();
             var startdate = new DateTime(2000, 1, 1);
             var enddate = new DateTime(2000, 3, 1);
             var description = "Reservation";
             
-            var tempresult = controller.AddReservation(emailservice, startdate, enddate, description, room1.Id);
+            var tempresult = controller.AddReservation(server.EmailService, startdate, enddate, description, room1.Id);
             Assert.IsType<OkObjectResult>(tempresult); //IF this is not true, then the addreservation does not work.
             controller.SetUserIdentity(actor);
             var reservation = server.database.Reservations.First();
 
-            var result = controller.ChangeReservation(emailservice, reservation.Id, newStartTime, newEndTime, newDescription, newRoom == null ? null : (int?)newRoom.Id, isActive, Force);
+            var result = controller.ChangeReservation(server.EmailService, reservation.Id, newStartTime, newEndTime, newDescription, newRoom == null ? null : (int?)newRoom.Id, isActive, Force);
 
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(newStartTime.HasValue ? newStartTime.Value : startdate, reservation.StartDate);
@@ -71,17 +70,16 @@ namespace XUnitTest.ReservationTests
             server.database.SaveChanges();
             var controller = new ReservationsController(server.database);
             controller.SetUserIdentity(owner);
-            var emailservice = new UnitTestEmailService();
             var startdate = new DateTime(2000, 1, 1);
             var enddate = new DateTime(2000, 3, 1);
             var description = "Reservation";
 
-            var tempresult = controller.AddReservation(emailservice, startdate, enddate, description, room1.Id);
+            var tempresult = controller.AddReservation(server.EmailService, startdate, enddate, description, room1.Id);
             Assert.IsType<OkObjectResult>(tempresult); //IF this is not true, then the addreservation does not work.
             controller.SetUserIdentity(actor);
             var reservation = server.database.Reservations.First();
 
-            var result = controller.ChangeReservation(emailservice, reservation.Id, newStartTime, newEndTime, newDescription, newRoom == null ? null : (int?)newRoom.Id, isActive, Force);
+            var result = controller.ChangeReservation(server.EmailService, reservation.Id, newStartTime, newEndTime, newDescription, newRoom == null ? null : (int?)newRoom.Id, isActive, Force);
             Assert.IsType<UnauthorizedResult>(result);
             Assert.Equal(startdate, reservation.StartDate);
             Assert.Equal(enddate, reservation.EndDate);

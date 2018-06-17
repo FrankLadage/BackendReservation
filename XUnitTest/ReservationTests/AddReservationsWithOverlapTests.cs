@@ -29,11 +29,10 @@ namespace XUnitTest.ReservationTests
             var controller = new ReservationsController(server.database);
             controller.SetUserIdentity(Actor);
 
-            var emailservice = new UnitTestEmailService();
             var startdate = new DateTime(2000, 1, 2);
             var enddate = new DateTime(2000, 1, 4);
             var description = "Reservation";
-            return new Tuple<Server, IActionResult>(server, controller.AddReservation(emailservice, startdate, enddate, description, room.Id, Force));
+            return new Tuple<Server, IActionResult>(server, controller.AddReservation(server.EmailService, startdate, enddate, description, room.Id, Force));
         }
 
         [Fact]
@@ -241,12 +240,11 @@ namespace XUnitTest.ReservationTests
             var controller = new ReservationsController(server.database);
             controller.SetUserIdentity(Actor);
 
-            var emailservice = new UnitTestEmailService();
             var startdate2 = new DateTime(2000, 1, 2);
             var enddate2 = new DateTime(2000, 1, 4);
             var description = "Reservation";
 
-            var result = controller.AddReservation(emailservice, startdate2, enddate2, description, room2.Id, Force);
+            var result = controller.AddReservation(server.EmailService, startdate2, enddate2, description, room2.Id, Force);
             Assert.IsType<OkObjectResult>(result);
             var madereservation = server.database.Participants.Where(x => x.UserID == Actor.Id).First().Reservation;
 

@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace ReserveerBackend
 {
-    public class EmptyEmailService : IEmailService
+    public class TestEmailService : IEmailService
     {
+        Dictionary<User, Tuple<User, string>> Messages = new Dictionary<User, Tuple<User, string>>();
+
         public override void SendNotification(User receiver, User sender, string message)
         {
-            Console.WriteLine("Should have send email with service");
-            Console.WriteLine(message);
+            Messages.Add(receiver, new Tuple<User, string>(sender, message));
         }
     }
 }

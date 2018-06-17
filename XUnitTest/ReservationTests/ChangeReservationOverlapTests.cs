@@ -30,7 +30,6 @@ namespace XUnitTest.ReservationTests
             server.database.SaveChanges();
             var controller = new ReservationsController(server.database);
             controller.SetUserIdentity(owner);
-            var emailservice = new UnitTestEmailService();
             var startdate = new DateTime(2000, 1, 1);
             var enddate = new DateTime(2000, 3, 1);
             var description = "Reservation";
@@ -38,10 +37,10 @@ namespace XUnitTest.ReservationTests
             var otherstartdate = new DateTime(2001, 1, 1);
             var otherenddate = new DateTime(2001, 3, 1);
 
-            var tempresult = controller.AddReservation(emailservice, startdate, enddate, description, room1.Id);
+            var tempresult = controller.AddReservation(server.EmailService, startdate, enddate, description, room1.Id);
             Assert.IsType<OkObjectResult>(tempresult); //IF this is not true, then the addreservation does not work.
             controller.SetUserIdentity(actor);
-            tempresult = controller.AddReservation(emailservice, otherstartdate, otherenddate, description, room1.Id);
+            tempresult = controller.AddReservation(server.EmailService, otherstartdate, otherenddate, description, room1.Id);
             Assert.IsType<OkObjectResult>(tempresult);
 
             var reservation = server.database.Reservations.Where(x => x.StartDate == startdate).First();
@@ -50,7 +49,7 @@ namespace XUnitTest.ReservationTests
             var newstartdate = new DateTime(2000, 2, 1);
             var neweneddate = new DateTime(2000, 4, 1);
 
-            var result = controller.ChangeReservation(emailservice, otherreservation.Id, newstartdate, neweneddate, null, null, null, true);
+            var result = controller.ChangeReservation(server.EmailService, otherreservation.Id, newstartdate, neweneddate, null, null, null, true);
 
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(newstartdate, reservation.EndDate);
@@ -76,7 +75,6 @@ namespace XUnitTest.ReservationTests
             server.database.SaveChanges();
             var controller = new ReservationsController(server.database);
             controller.SetUserIdentity(owner);
-            var emailservice = new UnitTestEmailService();
             var startdate = new DateTime(2000, 1, 1);
             var enddate = new DateTime(2000, 3, 1);
             var description = "Reservation";
@@ -84,10 +82,10 @@ namespace XUnitTest.ReservationTests
             var otherstartdate = new DateTime(2001, 1, 1);
             var otherenddate = new DateTime(2001, 3, 1);
 
-            var tempresult = controller.AddReservation(emailservice, startdate, enddate, description, room1.Id);
+            var tempresult = controller.AddReservation(server.EmailService, startdate, enddate, description, room1.Id);
             Assert.IsType<OkObjectResult>(tempresult); //IF this is not true, then the addreservation does not work.
             controller.SetUserIdentity(actor);
-            tempresult = controller.AddReservation(emailservice, otherstartdate, otherenddate, description, room1.Id);
+            tempresult = controller.AddReservation(server.EmailService, otherstartdate, otherenddate, description, room1.Id);
             Assert.IsType<OkObjectResult>(tempresult);
 
             var reservation = server.database.Participants.Where(x => x.UserID == owner.Id).First().Reservation;
@@ -96,7 +94,7 @@ namespace XUnitTest.ReservationTests
             var newstartdate = new DateTime(2000, 2, 1);
             var neweneddate = new DateTime(2000, 4, 1);
 
-            var result = controller.ChangeReservation(emailservice, otherreservation.Id, newstartdate, neweneddate, null, null, null, true);
+            var result = controller.ChangeReservation(server.EmailService, otherreservation.Id, newstartdate, neweneddate, null, null, null, true);
 
             Assert.IsType<UnauthorizedResult>(result);
             Assert.Equal(enddate, reservation.EndDate);

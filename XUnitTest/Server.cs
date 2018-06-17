@@ -15,10 +15,10 @@ namespace XUnitTest
         private HttpClient client { get; set; }
         private TestServer server;
         public ReserveerDBContext database { get; private set; }
-        public UnitTestEmailService EmailService { get; private set; }
+        public TestEmailService EmailService { get; private set; }
         public Server()
         {
-            EmailService = new UnitTestEmailService();
+            EmailService = new TestEmailService();
 
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()

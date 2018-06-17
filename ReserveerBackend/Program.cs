@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using ReserveerBackend.MessagingSystem;
 
 namespace ReserveerBackend
 {
@@ -37,7 +38,7 @@ namespace ReserveerBackend
                 .UseConfiguration(config)
                 .UseUrls(config.GetValue<string>("server.urls"))
                 .UseStartup<Startup>()
-                .WithEmailService(new EmptyEmailService())
+                .WithEmailService(new EmailService())
                 .Build();
     }
 }
