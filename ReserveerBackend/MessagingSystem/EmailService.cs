@@ -11,13 +11,11 @@ namespace ReserveerBackend.MessagingSystem
 {
     class EmailService : IEmailService
     {
-        public override void SendNotification(User receiver, User sender, string message)
+        public override void Send(User receiver, User sender, string message, string title)
         {
-            var fromAddress = "testreservering@gmail.com";
+            const string fromAddress = "testreservering@gmail.com";
             var toAddress = receiver.Email;
             const string fromPassword = "test1234test";
-            string subject = "Your reservation changed";
-            string body = String.Format(message);
             var smtp = new SmtpClient();
             {
                 smtp.Host = "smtp.gmail.com";
@@ -29,7 +27,7 @@ namespace ReserveerBackend.MessagingSystem
 
             try
             {
-                smtp.Send(fromAddress, toAddress, subject, body);
+                smtp.Send(fromAddress, toAddress, title, message);
             }
             catch(Exception e)
             {

@@ -9,11 +9,24 @@ namespace ReserveerBackend
 {
     public class TestEmailService : IEmailService
     {
-        Dictionary<User, Tuple<User, string>> Messages = new Dictionary<User, Tuple<User, string>>();
-
-        public override void SendNotification(User receiver, User sender, string message)
+        public struct email
         {
-            Messages.Add(receiver, new Tuple<User, string>(sender, message));
+            string title, body;
+            User Sender;
+            public email(User sender, string title, string body)
+            {
+                this.Sender = sender;
+                this.title = title;
+                this.body = body;
+            }
+        }
+        Dictionary<User, List<email>> Messages = new Dictionary<User, List<email>>();
+        
+        public override void Send(User receiver, User sender, string message, string title)
+        {
+            if (!Messages.ContainsKey(receiver))
+                Messages.Add(receiver, new List<email>());
+            Messages[receiver].Add(new email(sender, title, message));
         }
     }
 }

@@ -22,7 +22,7 @@ namespace XUnitTest.ReservationTests
             var controller = new ReservationsController(server.server.database);
             controller.SetUserIdentity(loggedinuser);
 
-            var result = controller.AddParticipants(new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
+            var result = controller.AddParticipants(server.server.EmailService, new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
 
             Assert.IsType<OkObjectResult>(result);
             Assert.True(server.server.database.Participants.Where(x => x.User == loggedinuser).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == true).Count() == 1);
@@ -41,7 +41,7 @@ namespace XUnitTest.ReservationTests
             var controller = new ReservationsController(server.server.database);
             controller.SetUserIdentity(loggedinuser);
 
-            var result = controller.AddParticipants(new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
+            var result = controller.AddParticipants(server.server.EmailService, new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
 
             Assert.IsType<UnauthorizedResult>(result);
             Assert.False(server.server.database.Participants.Where(x => x.User == useraddnotowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == false).Count() == 1);
@@ -59,7 +59,7 @@ namespace XUnitTest.ReservationTests
             var controller = new ReservationsController(server.server.database);
             controller.SetUserIdentity(loggedinuser);
 
-            var result = controller.AddParticipants(new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
+            var result = controller.AddParticipants(server.server.EmailService, new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
 
             Assert.IsType<OkObjectResult>(result);
             Assert.True(server.server.database.Participants.Where(x => x.User == useraddnotowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == false).Count() == 1);
@@ -77,7 +77,7 @@ namespace XUnitTest.ReservationTests
             var controller = new ReservationsController(server.server.database);
             controller.SetUserIdentity(loggedinuser);
 
-            var result = controller.AddParticipants(new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
+            var result = controller.AddParticipants(server.server.EmailService, new List<int>() { useraddowner.Id }, new List<int>() { useraddnotowner.Id }, reservation.Id);
 
             Assert.IsType<OkObjectResult>(result);
             Assert.True(server.server.database.Participants.Where(x => x.User == useraddnotowner).Where(x => x.ReservationID == reservation.Id).Where(x => x.IsOwner == false).Count() == 1);

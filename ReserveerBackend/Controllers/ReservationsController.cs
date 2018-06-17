@@ -50,7 +50,7 @@ namespace ReserveerBackend.Controllers
 
         [HttpPost]
         [Route("Participants/Add")]
-        public IActionResult AddParticipants(List<int> userAsOwner, List<int> userAsParticipant, int reservationid)
+        public IActionResult AddParticipants([FromServices] IEmailService emailservice, List<int> userAsOwner, List<int> userAsParticipant, int reservationid)
         {
             if (userAsParticipant == null)
                 userAsParticipant = new List<int>();
@@ -87,14 +87,14 @@ namespace ReserveerBackend.Controllers
 
             foreach (var user in users)
             {
-                InviteUser(owner, user.Item1, user.Item2, reservation);
+                InviteUser(emailservice, owner, user.Item1, user.Item2, reservation);
             }
             return Ok("Succesfull added or updated users");
         }
 
         [HttpDelete]
         [Route("Participants/Remove")]
-        public IActionResult RemoveParticipants(List<int> UserIds, int reservationid)
+        public IActionResult RemoveParticipants([FromServices] IEmailService emailservice, List<int> UserIds, int reservationid)
         {
             var owner = Models.User.FromClaims(User.Claims, _context);
             var _reservation = _context.Reservations.Where(x => x.Id == reservationid).Include(x => x.Participants).Include(x => x.ParticipantChanges);
@@ -120,13 +120,13 @@ namespace ReserveerBackend.Controllers
 
             foreach (var user in users)
             {
-                RemoveUser(owner, user, reservation);
+                RemoveUser(emailservice, owner, user, reservation);
             }
             _context.SaveChanges();
             return Ok(users.ToList());
         }
 
-        private void InviteUser(User actor, User target, bool asOwner, Reservation reservation)
+        private void InviteUser(IEmailService emailservice, User actor, User target, bool asOwner, Reservation reservation)
         {
             Debug.WriteLine("Should have invited user, but added as participant instead. Please fix 'InviteUser' in 'ReservationController.cs' if the messaging and invitation system is implemented.");
             var participant = reservation.Participants.Find(x => x.UserID == target.Id);
@@ -134,6 +134,7 @@ namespace ReserveerBackend.Controllers
             {
                 reservation.Participants.Add(new Participant(reservation, target, asOwner, DateTime.Now));
                 _context.SaveChanges();
+                emailservice.AddedAsParticipant(target, actor, reservation, _context);
                 return;
             }
             else
@@ -143,11 +144,12 @@ namespace ReserveerBackend.Controllers
                 _context.ParticipantChanges.Add(participantchange);
                 _context.Participants.Add(participant);
                 _context.SaveChanges();
+                emailservice.AddedAsParticipant(target, actor, reservation, _context);
                 return;
             }
         }
 
-        private void RemoveUser(User actor, User target, Reservation reservation)
+        private void RemoveUser(IEmailService emailservice, User actor, User target, Reservation reservation)
         {
             Debug.WriteLine("Should have messaged user, but removed as participant instead. Please fix 'RemoveUser' in 'ReservationController.cs' if the messaging system is implemented.");
             var participant = reservation.Participants.Find(x => x.UserID == target.Id);
@@ -155,6 +157,8 @@ namespace ReserveerBackend.Controllers
                 return;
             _context.ParticipantChanges.Add(participant.GenerateChangeCopy(DateTime.Now));
             reservation.Participants.Remove(participant);
+            _context.SaveChanges();
+            emailservice.RemovedAsParticipant(target, actor, reservation, _context);
         }
 
         private bool CanEditReservation(Reservation reservation, User actor)
@@ -343,7 +347,7 @@ namespace ReserveerBackend.Controllers
 
             foreach (var user in _context.Reservations.Where(x => x.Id == reservation.Id).Include(x => x.Participants).First().Participants.Where(x => x.User.EmailNotification))
             {
-                emailservice.SendReservationChangedMessage(user.User, Actor, reservation, reservationchange);
+                emailservice.SendReservationChangedMessage(user.User, Actor, reservation, reservationchange, _context);
             }
 
             return Ok("Succesfully changed reservation");
@@ -373,12 +377,12 @@ namespace ReserveerBackend.Controllers
             if (OtherReservation.StartDate < EndTime && OtherReservation.EndDate > EndTime)
                 OtherReservation.StartDate = EndTime;
 
-            //_context.Reservations.Add(OtherReservation);
             _context.ReservationChanges.Add(oldreservation);
 
             foreach (var participant in OtherReservation.Participants)
             {
-                emailservice.SendReservationChangedMessage(participant.User, actor, OtherReservation, oldreservation);
+                if(participant.User.EmailNotification)
+                    emailservice.SendReservationChangedMessage(participant.User, actor, OtherReservation, oldreservation, _context);
             }
         }
 
