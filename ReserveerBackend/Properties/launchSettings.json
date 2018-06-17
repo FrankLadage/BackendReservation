@@ -18,7 +18,7 @@
     },
     "ReserveerBackend": {
       "commandName": "Project",
-      "commandLineArgs": "--server.urls=http://0.0.0.0:5001",
+      "commandLineArgs": "--server.urls=http://0.0.0.0:5000",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {

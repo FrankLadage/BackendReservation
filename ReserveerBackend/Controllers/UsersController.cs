@@ -37,11 +37,7 @@ namespace ReserveerBackend.Controllers
             {
                 return BadRequest("Role is invalid");
             }
-            var newuser = new User();
-            newuser.Role = castrole.Value;
-            newuser.Email = email;
-            newuser.EmailNotification = false;
-            newuser.PasswordLogin = PasswordLoginUtilities.GenerateNewLogin(Username, Password);
+            var newuser = new User(PasswordLoginUtilities.GenerateNewLogin(Username, Password), castrole.Value, email, true);
 
             if (DoesUserExist(newuser.PasswordLogin))
             {
@@ -82,7 +78,7 @@ namespace ReserveerBackend.Controllers
         {
             if (_context.UserPasswordLogins.Count() < 1)
                 return false;
-            return _context.UserPasswordLogins.First(u => u.Username == userlogin.Username) != null;
+            return _context.UserPasswordLogins.Where(u => u.Username == userlogin.Username).Count() > 0;
         }
     }
 }

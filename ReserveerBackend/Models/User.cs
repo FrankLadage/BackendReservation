@@ -56,19 +56,10 @@ namespace ReserveerBackend.Models
                 new Claim(_ID, Id.ToString())
             }, AuthenticationScheme);
         }
-        public static User FromClaimsIdentity(ClaimsIdentity identity)
-        {
-            var newuser = new User();
-            newuser.Id = int.Parse(identity.FindFirst(_ID).Value);
-            newuser.Role = (Role)int.Parse(identity.FindFirst(ClaimTypes.Role).Value);
-            newuser.Email = identity.FindFirst(_Email).Value;
-            newuser.EmailNotification = bool.Parse(identity.FindFirst(_EmailNotification).Value);
-            return newuser;
-        }
 
-        public static User FromClaims(IEnumerable<Claim> claims)
+        public static User FromClaims(IEnumerable<Claim> claims, ReserveerDBContext context)
         {
-            return FromClaimsIdentity(new ClaimsIdentity(claims));
+            return context.Users.Where(x => x.Id == int.Parse(claims.Where(z => z.Type == _ID).First().Value)).First();
         }
     }
 }

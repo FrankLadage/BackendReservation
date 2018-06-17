@@ -47,7 +47,7 @@ namespace ReserveerBackend.Controllers
         [Route("Create")]
         public IActionResult createreport(int RoomID, string Description)
         {
-            var Owner = Models.User.FromClaims(User.Claims);
+            var Owner = Models.User.FromClaims(User.Claims, _context);
             var room = _context.Rooms.Where(x => x.Id == RoomID).FirstOrDefault();
             if(room == null)
             {
@@ -66,7 +66,7 @@ namespace ReserveerBackend.Controllers
         [Route("CreateAboutReservation")]
         public IActionResult createreportaboutreservation(int RoomID, string Description, int reservationid, DateTime? RequestedEndTime)
         {
-            var Owner = Models.User.FromClaims(User.Claims);
+            var Owner = Models.User.FromClaims(User.Claims, _context);
             var room = _context.Rooms.Where(x=> x.Id == RoomID).FirstOrDefault();
             var reservation = _context.Reservations.Where(x => x.Id == reservationid).FirstOrDefault();
             if (room == null)

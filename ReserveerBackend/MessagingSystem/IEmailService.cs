@@ -15,7 +15,7 @@ namespace ReserveerBackend.MessagingSystem
             @"The reservation from room '{0}' with description {1} was changed.
             From {2} untill {3}
             To: {4} untill {5}",
-            reservation.Room,
+            reservation.Room.Name,
             reservation.Description,
             reservation.StartDate.ToString(),
             reservation.EndDate.ToString(),

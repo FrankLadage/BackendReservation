@@ -64,7 +64,7 @@ namespace ReserveerBackend.Controllers
                 UserIds.Add(new Tuple<int, bool>(item, false));
 
             //Check if user is owner or service desk member or higher
-            var owner = Models.User.FromClaims(User.Claims);
+            var owner = Models.User.FromClaims(User.Claims, _context);
             var _reservation = _context.Reservations.Where(x => x.Id == reservationid).Include(x=>x.Participants).Include(x=>x.ParticipantChanges);
             if(_reservation.Count() != 1)
             {
@@ -96,7 +96,7 @@ namespace ReserveerBackend.Controllers
         [Route("Participants/Remove")]
         public IActionResult RemoveParticipants(List<int> UserIds, int reservationid)
         {
-            var owner = Models.User.FromClaims(User.Claims);
+            var owner = Models.User.FromClaims(User.Claims, _context);
             var _reservation = _context.Reservations.Where(x => x.Id == reservationid).Include(x => x.Participants).Include(x => x.ParticipantChanges);
             if (_reservation.Count() != 1)
             {
@@ -173,7 +173,7 @@ namespace ReserveerBackend.Controllers
         [Route("Change")]
         public IActionResult ChangeReservation([FromServices] IEmailService emailservice, int ReservationID, DateTime? StartTime, DateTime? EndTime, string Description, int? RoomID, bool? isactive, bool Force = false)
         {
-            User actor = Models.User.FromClaims(User.Claims);
+            User actor = Models.User.FromClaims(User.Claims, _context);
             Room room = null;
             if (RoomID.HasValue)
             {
@@ -186,7 +186,7 @@ namespace ReserveerBackend.Controllers
             }
             lock (_context.ReservationLock)
             {
-                var _reservation = _context.Reservations.Where(x => x.Id == ReservationID).Include(x => x.Participants);
+                var _reservation = _context.Reservations.Where(x => x.Id == ReservationID).Include(x => x.Participants).Include(x => x.Room);
                 Reservation reservation = null;
                 if(_reservation.Count() == 0)
                 {
@@ -225,11 +225,11 @@ namespace ReserveerBackend.Controllers
                 var intersections = FindIntersections(start, end, room);
                 if (intersections.Count() <= 0)
                 {
-                    return _ChangeReservation(isactive, reservation, start, end, room, Description, reservationchange);
+                    return _ChangeReservation(emailservice, actor, isactive, reservation, start, end, room, Description, reservationchange);
                 }
                 else if(intersections.Count() == 1 && intersections.First() == reservation)
                 {
-                    return _ChangeReservation(isactive, reservation, start, end, room, Description, reservationchange);
+                    return _ChangeReservation(emailservice, actor, isactive, reservation, start, end, room, Description, reservationchange);
                 }
                 else
                 {
@@ -275,7 +275,7 @@ namespace ReserveerBackend.Controllers
                 return BadRequest("Room does not exist");
             }
             var room = rooms.First();
-            var Owner = Models.User.FromClaims(User.Claims);
+            var Owner = Models.User.FromClaims(User.Claims, _context);
 
             lock (_context.ReservationLock) //lock all intersection checking and reservation writing logic to prevent changes to the database during the checking phase
             {
@@ -325,10 +325,10 @@ namespace ReserveerBackend.Controllers
             {
                 ShortenOtherReservation(emailservice, start, end, intersection, actor);
             }
-            return _ChangeReservation(isactive, reservation, start, end, room, Description, reservationchange);
+            return _ChangeReservation(emailservice, actor, isactive, reservation, start, end, room, Description, reservationchange);
         }
 
-        private IActionResult _ChangeReservation(bool? isactive, Reservation reservation, DateTime start, DateTime end, Room room, string Description, ReservationChange reservationchange)
+        private IActionResult _ChangeReservation(IEmailService emailservice, User Actor, bool? isactive, Reservation reservation, DateTime start, DateTime end, Room room, string Description, ReservationChange reservationchange)
         {
             if (isactive.HasValue)
                 reservation.Active = isactive.Value;
@@ -340,6 +340,12 @@ namespace ReserveerBackend.Controllers
                 reservation.Description = Description;
             _context.ReservationChanges.Add(reservationchange);
             _context.SaveChanges();
+
+            foreach (var user in _context.Reservations.Where(x => x.Id == reservation.Id).Include(x => x.Participants).First().Participants.Where(x => x.User.EmailNotification))
+            {
+                emailservice.SendReservationChangedMessage(user.User, Actor, reservation, reservationchange);
+            }
+
             return Ok("Succesfully changed reservation");
         }
 
