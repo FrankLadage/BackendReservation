@@ -19,13 +19,23 @@ namespace ReserveerBackend.Controllers
     public class ReservationsController : Controller
     {
         private readonly ReserveerDBContext _context;
-        //private readonly object ReservationLock = new object();
 
         public ReservationsController(ReserveerDBContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Get a list of matching reservations
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="isactive"></param>
+        /// <param name="ismutable"></param>
+        /// <param name="description"></param>
+        /// <param name="roomID"></param>
+        /// <param name="after"></param>
+        /// <param name="before"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("get")]
         public IEnumerable<Reservation> GetMatch(int? Id, bool? isactive, bool? ismutable, string description, int? roomID, DateTime? after, DateTime? before)
@@ -48,6 +58,14 @@ namespace ReserveerBackend.Controllers
             return validReservations;
         }
 
+        /// <summary>
+        /// Add a participant
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="userAsOwner"></param>
+        /// <param name="userAsParticipant"></param>
+        /// <param name="reservationid"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Participants/Add")]
         public IActionResult AddParticipants([FromServices] IEmailService emailservice, List<int> userAsOwner, List<int> userAsParticipant, int reservationid)
@@ -92,6 +110,13 @@ namespace ReserveerBackend.Controllers
             return Ok("Succesfull added or updated users");
         }
 
+        /// <summary>
+        /// Remove a participant
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="UserIds"></param>
+        /// <param name="reservationid"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("Participants/Remove")]
         public IActionResult RemoveParticipants([FromServices] IEmailService emailservice, List<int> UserIds, int reservationid)
@@ -161,6 +186,12 @@ namespace ReserveerBackend.Controllers
             emailservice.RemovedAsParticipant(target, actor, reservation, _context);
         }
 
+        /// <summary>
+        /// Checks if a user can edit a reservation
+        /// </summary>
+        /// <param name="reservation"></param>
+        /// <param name="actor"></param>
+        /// <returns></returns>
         private bool CanEditReservation(Reservation reservation, User actor)
         {
             if (reservation.Participants.Where(x => x.IsOwner).Where(x => x.UserID == actor.Id).Count() != 1)
@@ -173,6 +204,18 @@ namespace ReserveerBackend.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Change a reservation with new data
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="ReservationID"></param>
+        /// <param name="StartTime"></param>
+        /// <param name="EndTime"></param>
+        /// <param name="Description"></param>
+        /// <param name="RoomID"></param>
+        /// <param name="isactive"></param>
+        /// <param name="Force"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Change")]
         public IActionResult ChangeReservation([FromServices] IEmailService emailservice, int ReservationID, DateTime? StartTime, DateTime? EndTime, string Description, int? RoomID, bool? isactive, bool Force = false)
@@ -261,6 +304,16 @@ namespace ReserveerBackend.Controllers
             }
         }
 
+        /// <summary>
+        /// Add a reservation
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="StartTime"></param>
+        /// <param name="EndTime"></param>
+        /// <param name="Description"></param>
+        /// <param name="RoomID"></param>
+        /// <param name="Force"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Add")]
         public IActionResult AddReservation([FromServices] IEmailService emailservice, DateTime StartTime, DateTime EndTime, string Description, int RoomID, bool Force = false)
@@ -319,6 +372,20 @@ namespace ReserveerBackend.Controllers
             }
         }
 
+        /// <summary>
+        /// Forcibly change a reservation, changing other reservations as neccecary, if possibly.
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="isactive"></param>
+        /// <param name="reservation"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="room"></param>
+        /// <param name="Description"></param>
+        /// <param name="reservationchange"></param>
+        /// <param name="actor"></param>
+        /// <param name="Intersections"></param>
+        /// <returns></returns>
         private IActionResult _ForceChangeReservation([FromServices] IEmailService emailservice, bool? isactive, Reservation reservation, DateTime start, DateTime end, Room room, string Description, ReservationChange reservationchange, User actor, IEnumerable<Reservation> Intersections)
         {
             if (!Intersections.All(x => x.IsMutable))
@@ -332,6 +399,19 @@ namespace ReserveerBackend.Controllers
             return _ChangeReservation(emailservice, actor, isactive, reservation, start, end, room, Description, reservationchange);
         }
 
+        /// <summary>
+        /// Change a reservation only if no conflict occurs.
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="Actor"></param>
+        /// <param name="isactive"></param>
+        /// <param name="reservation"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="room"></param>
+        /// <param name="Description"></param>
+        /// <param name="reservationchange"></param>
+        /// <returns></returns>
         private IActionResult _ChangeReservation(IEmailService emailservice, User Actor, bool? isactive, Reservation reservation, DateTime start, DateTime end, Room room, string Description, ReservationChange reservationchange)
         {
             if (isactive.HasValue)
@@ -353,6 +433,18 @@ namespace ReserveerBackend.Controllers
             return Ok("Succesfully changed reservation");
         }
 
+        /// <summary>
+        /// Add a reservation and override other reservations.
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="Intersections"></param>
+        /// <param name="StartTime"></param>
+        /// <param name="EndTime"></param>
+        /// <param name="Description"></param>
+        /// <param name="Owner"></param>
+        /// <param name="Room"></param>
+        /// <param name="IsMutable"></param>
+        /// <returns></returns>
         private int OverrideAddReservation([FromServices] IEmailService emailservice, IEnumerable<Reservation> Intersections, DateTime StartTime, DateTime EndTime, string Description, User Owner, Room Room, bool IsMutable = true)
         {
             if(!Intersections.All(x => x.IsMutable))
@@ -369,6 +461,14 @@ namespace ReserveerBackend.Controllers
             return reservationid;
         }
 
+        /// <summary>
+        /// Shorten a reservation to not conflict with the given times
+        /// </summary>
+        /// <param name="emailservice"></param>
+        /// <param name="StartTime"></param>
+        /// <param name="EndTime"></param>
+        /// <param name="OtherReservation"></param>
+        /// <param name="actor"></param>
         private void ShortenOtherReservation([FromServices] IEmailService emailservice, DateTime StartTime, DateTime EndTime, Reservation OtherReservation, User actor)
         {
             var oldreservation = OtherReservation.GenerateChangeCopy(actor);
@@ -385,7 +485,17 @@ namespace ReserveerBackend.Controllers
                     emailservice.SendReservationChangedMessage(participant.User, actor, OtherReservation, oldreservation, _context);
             }
         }
-
+       
+        /// <summary>
+        /// Creater a reservation
+        /// </summary>
+        /// <param name="StartTime"></param>
+        /// <param name="EndTime"></param>
+        /// <param name="Description"></param>
+        /// <param name="Owner"></param>
+        /// <param name="Room"></param>
+        /// <param name="IsMutable"></param>
+        /// <returns></returns>
         private int createreservation(DateTime StartTime, DateTime EndTime, string Description, User Owner, Room Room, bool IsMutable = true)
         {
             var reservation = new Reservation();
@@ -402,7 +512,13 @@ namespace ReserveerBackend.Controllers
             _context.SaveChanges();
             return reservation.Id;
         }
-
+        /// <summary>
+        /// Find all intersections of a given timeframe and the reservations in a room
+        /// </summary>
+        /// <param name="StartTime"></param>
+        /// <param name="EndTime"></param>
+        /// <param name="room"></param>
+        /// <returns></returns>
         private IEnumerable<Reservation> FindIntersections(DateTime StartTime, DateTime EndTime, Room room)
         {
             if (room == null)

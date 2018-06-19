@@ -38,7 +38,7 @@ namespace ReserveerBackend
                 .UseConfiguration(config)
                 .UseUrls(config.GetValue<string>("server.urls"))
                 .UseStartup<Startup>()
-                .WithEmailService(new EmailService())
+                .WithEmailService(new EmailService("testreservering@gmail.com", "test1234test"))
                 .Build();
     }
 }

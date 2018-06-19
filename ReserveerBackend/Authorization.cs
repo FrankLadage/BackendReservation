@@ -20,6 +20,11 @@ namespace ReserveerBackend
         public const string ServiceDeskString = "ServiceDesk";
         public const string AdminString = "Admin";
 
+        /// <summary>
+        /// Creates a role from a string
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
         public static Role? FromString(string role)
         {
             switch (role)
@@ -32,6 +37,11 @@ namespace ReserveerBackend
             }
         }
 
+        /// <summary>
+        /// Creates a string from a role
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
         public static String FromRole(Role role)
         {
             switch (role)
@@ -43,11 +53,22 @@ namespace ReserveerBackend
                 default: throw new NotImplementedException();
             }
         }
-
+        /// <summary>
+        /// Checks if A is equal to B, or higher ranked.
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <returns></returns>
         public static bool AIsBOrHigher(Role A, Role B)
         {
             return (int)A >= (int)B;
         }
+        /// <summary>
+        /// Checks if A is higher ranked than B
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="B"></param>
+        /// <returns></returns>
         public static bool AIsHigherThanB(Role A, Role B)
         {
             return (int)A > (int)B;

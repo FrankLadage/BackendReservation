@@ -13,6 +13,12 @@ namespace ReserveerBackend
         const int saltsize = 16;
         const int hashsize = 20;
 
+        /// <summary>
+        /// Generates a new userpassword login with an encrypted password and salt.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public static UserPasswordLogin GenerateNewLogin(string username, string password)
         {
             byte[] salt = new byte[saltsize];
@@ -26,7 +32,12 @@ namespace ReserveerBackend
             userpasslogin.Username = username;
             return userpasslogin;
         }
-
+        /// <summary>
+        /// Checks if the password matched a given login object
+        /// </summary>
+        /// <param name="Password"></param>
+        /// <param name="passworddata"></param>
+        /// <returns></returns>
         public static bool CheckLogin(string Password, UserPasswordLogin passworddata)
         {
             var pbkdf2 = new Rfc2898DeriveBytes(Password, passworddata.Salt, iterations);

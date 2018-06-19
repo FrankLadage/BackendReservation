@@ -23,6 +23,14 @@ namespace ReserveerBackend.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Creates a new user
+        /// </summary>
+        /// <param name="Username"></param>
+        /// <param name="Password"></param>
+        /// <param name="email"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("CreateUsernamePassword")]
         [Authorize(Roles = Authorization.AdminOrHigher)]
@@ -54,6 +62,15 @@ namespace ReserveerBackend.Controllers
             return Ok(string.Format("Succesfully registered user with username: {0}", Username));
         }
 
+        /// <summary>
+        /// Gets all users matching a given description
+        /// </summary>
+        /// <param name="Username"></param>
+        /// <param name="email"></param>
+        /// <param name="role"></param>
+        /// <param name="Id"></param>
+        /// <param name="emailnotifications"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("GetUsers")]
         [Authorize(Roles = Authorization.ServiceOrHigher)]

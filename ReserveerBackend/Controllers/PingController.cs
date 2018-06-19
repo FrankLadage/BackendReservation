@@ -17,6 +17,10 @@ namespace ReserveerBackend.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Pings the server. Checks if database is connected.
+        /// </summary>
+        /// <returns>Ok if database is connected.</returns>
         [HttpGet]
         public IActionResult Ping()
         {

@@ -15,6 +15,10 @@ namespace ReserveerBackend.Controllers
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     public class LogoutController : Controller
     {
+        /// <summary>
+        /// Logs the calling user out
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

@@ -22,6 +22,16 @@ namespace ReserveerBackend.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Get a list of all matching reports
+        /// </summary>
+        /// <param name="Id">The ID of the report to match</param>
+        /// <param name="roomId">The ID of the room to match</param>
+        /// <param name="ReservationID">The ID of the reservation to match</param>
+        /// <param name="UserID">The UserID to match</param>
+        /// <param name="description">The description to match</param>
+        /// <param name="actionstatus">The actionstatus to match</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = Authorization.ServiceOrHigher)]
         [Route("Get")]
@@ -43,6 +53,12 @@ namespace ReserveerBackend.Controllers
             return validReports;
         }
 
+        /// <summary>
+        /// Create a new report about a room
+        /// </summary>
+        /// <param name="RoomID">The room ID in question</param>
+        /// <param name="Description">The description</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Create")]
         public IActionResult createreport(int RoomID, string Description)
@@ -62,6 +78,15 @@ namespace ReserveerBackend.Controllers
             _context.SaveChanges();
             return Ok("Succesfully added report");
         }
+
+        /// <summary>
+        /// Create a report about a reservation
+        /// </summary>
+        /// <param name="RoomID">The room id</param>
+        /// <param name="Description">The description</param>
+        /// <param name="reservationid">The reservationID</param>
+        /// <param name="RequestedEndTime">Optional requested end time, in case a reservation needs to be moved</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("CreateAboutReservation")]
         public IActionResult createreportaboutreservation(int RoomID, string Description, int reservationid, DateTime? RequestedEndTime)

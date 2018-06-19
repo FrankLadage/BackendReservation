@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ReserveerBackend.Controllers
 {
+    /// <summary>
+    /// Allows for remote shutdown of the server, if using the correct key generated at startup of the server.
+    /// Used by jenkins to shut down servers running on an assigner port.
+    /// </summary>
     [Produces("application/json")]
     [Route("api/Shutdown")]
     public class ShutdownController : Controller

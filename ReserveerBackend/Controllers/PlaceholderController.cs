@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ReserveerBackend.Controllers
 {
+    /// <summary>
+    /// Placeholder for redirections, so that not logged in and unauthorized responses do not return 404
+    /// </summary>
     [Produces("application/json")]
     [Route("api/Placeholder")]
     public class PlaceholderController : Controller

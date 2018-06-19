@@ -18,6 +18,7 @@ namespace ReserveerBackend.Controllers
         {
             _context = context;
         }
+
         [HttpPost]
         public IActionResult PostTemperature(float value, int sensorID, int roomid, string token)
         {

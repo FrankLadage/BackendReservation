@@ -10,6 +10,12 @@ namespace ReserveerBackend
 {
     public static class WebHostBuilderExtensions
     {
+        /// <summary>
+        /// Adds an IEmailService to the services of the webhostbuilder
+        /// </summary>
+        /// <param name="hostbuilder"></param>
+        /// <param name="emailservice"></param>
+        /// <returns></returns>
         public static IWebHostBuilder WithEmailService(this IWebHostBuilder hostbuilder, IEmailService emailservice)
         {
             return hostbuilder.ConfigureServices(x => x.Add(new ServiceDescriptor(typeof(IEmailService), emailservice)));

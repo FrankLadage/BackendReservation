@@ -22,6 +22,12 @@ namespace ReserveerBackend.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Logs a user in
+        /// </summary>
+        /// <param name="name">Username with which to login</param>
+        /// <param name="password">Password with which to login</param>
+        /// <returns>HTTP status code and optional message</returns>
         [HttpPost]
         public async Task<IActionResult> Login(string name, string password)
         {
