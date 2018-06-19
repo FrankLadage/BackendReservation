@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 //using System.Linq;
 using System.Threading.Tasks;
+using JsonApiDotNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -45,15 +46,18 @@ namespace ReserveerBackend
                     services.AddDbContext<ReserveerDBContext>(options =>
                         options.UseNpgsql(Configuration.GetConnectionString("Development")
                             , b => b.MigrationsAssembly("ReserveerBackend")));
+                    services.AddJsonApi<DbContext>(options => options.Namespace = "Api");
                     break;
                 case "Production":
                     services.AddDbContext<ReserveerDBContext>(options =>
                         options.UseNpgsql(Configuration.GetConnectionString("Production")
                             , b => b.MigrationsAssembly("ReserveerBackend")));;
+                    services.AddJsonApi<DbContext>(options => options.Namespace = "Api");
                     break;
                 case "Testing":
                     services.AddDbContext<ReserveerDBContext>(options =>
                         options.UseInMemoryDatabase());
+                    services.AddJsonApi<DbContext>(options => options.Namespace = "Api");
                     break;
                 default: throw new NotImplementedException();
             }
@@ -110,7 +114,9 @@ namespace ReserveerBackend
 
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseJsonApi();
+
+            //app.UseMvc();
 
 
 
