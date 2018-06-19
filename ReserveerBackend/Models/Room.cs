@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace ReserveerBackend.Models
 {
+    [Route("api/[controller]")]
+
     public class Room
     {
         public Room(string name, string location, int capacity, bool tv, bool smartboard, int powersupply)
